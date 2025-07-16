@@ -341,7 +341,7 @@ export default function WorkshopsPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-2xl font-bold text-emerald-600">${workshop.price}</div>
+          
                       <Button className="bg-emerald-600 hover:bg-emerald-700">Enroll Now</Button>
                     </div>
                   </CardContent>
@@ -415,7 +415,7 @@ export default function WorkshopsPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-2xl font-bold text-emerald-600">${workshop.price}</div>
+                     
                       <Button className="bg-emerald-600 hover:bg-emerald-700">Enroll Now</Button>
                     </div>
                   </CardContent>
