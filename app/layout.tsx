@@ -4,7 +4,7 @@ import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
 
 export const metadata: Metadata = {
-  title: "v0 App",
+  title: "Data Hub",
   description: "Created with v0",
   generator: "v0.dev",
 }
