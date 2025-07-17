@@ -221,14 +221,14 @@ export default function HomePage() {
       </header>
 
       {/* News Carousel Hero Section */}
-      <section className="py-8 lg:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section>
+        <div className="max-w-full">
           <NewsCarousel />
         </div>
       </section>
 
       {/* Community Stats */}
-      <section className="py-12 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-slate-800 mb-8">Join the Leading Data Community</h2>
 

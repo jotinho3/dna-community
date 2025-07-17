@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, ChevronRight, Clock, TrendingUp } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight, Clock, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 interface NewsItem {
-  id: string
-  title: string
-  summary: string
-  category: string
-  image: string
-  readTime: string
-  publishedAt: string
-  trending: boolean
+  id: string;
+  title: string;
+  summary: string;
+  category: string;
+  image: string;
+  readTime: string;
+  publishedAt: string;
+  trending: boolean;
 }
 
 const newsItems: NewsItem[] = [
@@ -74,44 +74,46 @@ const newsItems: NewsItem[] = [
     publishedAt: "12 hours ago",
     trending: true,
   },
-]
+];
 
 export function NewsCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % newsItems.length)
-    }, 5000)
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % newsItems.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [isAutoPlaying])
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(index)
-    setIsAutoPlaying(false)
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }
+    setCurrentIndex(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + newsItems.length) % newsItems.length)
-    setIsAutoPlaying(false)
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + newsItems.length) % newsItems.length
+    );
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % newsItems.length)
-    setIsAutoPlaying(false)
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % newsItems.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
 
-  const currentNews = newsItems[currentIndex]
+  const currentNews = newsItems[currentIndex];
 
   return (
-    <div className="relative w-full max-w-6xl mx-auto">
+    <div className="relative w-full mx-auto">
       <Card className="overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white">
         <CardContent className="p-0">
           <div className="relative h-96 lg:h-[500px]">
@@ -126,22 +128,32 @@ export function NewsCarousel() {
             {/* Content */}
             <div className="relative z-10 h-full flex items-center">
               <div className="w-full px-8 lg:px-12">
-                <div className="max-w-3xl">
+                <div className="max-w-3xl mx-20">
                   <div className="flex items-center space-x-4 mb-4">
-                    <Badge variant="secondary" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Badge
+                      variant="secondary"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
                       {currentNews.category}
                     </Badge>
                     {currentNews.trending && (
-                      <Badge variant="secondary" className="bg-red-500 hover:bg-red-600 text-white">
+                      <Badge
+                        variant="secondary"
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                      >
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Trending
                       </Badge>
                     )}
                   </div>
 
-                  <h2 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight">{currentNews.title}</h2>
+                  <h2 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight">
+                    {currentNews.title}
+                  </h2>
 
-                  <p className="text-lg lg:text-xl text-slate-200 mb-6 leading-relaxed">{currentNews.summary}</p>
+                  <p className="text-lg lg:text-xl text-slate-200 mb-6 leading-relaxed">
+                    {currentNews.summary}
+                  </p>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-6 text-sm text-slate-300">
@@ -152,8 +164,13 @@ export function NewsCarousel() {
                       <span>{currentNews.publishedAt}</span>
                     </div>
 
-                    <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
-                      <Link href={`/news/${currentNews.id}`}>Read Full Article</Link>
+                    <Button
+                      asChild
+                      className="bg-emerald-600 hover:bg-emerald-700"
+                    >
+                      <Link href={`/news/${currentNews.id}`}>
+                        Read Full Article
+                      </Link>
                     </Button>
                   </div>
                 </div>
@@ -164,7 +181,7 @@ export function NewsCarousel() {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-20"
               onClick={goToPrevious}
             >
               <ChevronLeft className="w-6 h-6" />
@@ -173,7 +190,7 @@ export function NewsCarousel() {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-20"
               onClick={goToNext}
             >
               <ChevronRight className="w-6 h-6" />
@@ -186,7 +203,9 @@ export function NewsCarousel() {
               <button
                 key={index}
                 className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentIndex ? "bg-emerald-500" : "bg-slate-500 hover:bg-slate-400"
+                  index === currentIndex
+                    ? "bg-emerald-500"
+                    : "bg-slate-500 hover:bg-slate-400"
                 }`}
                 onClick={() => goToSlide(index)}
               />
@@ -196,8 +215,8 @@ export function NewsCarousel() {
       </Card>
 
       {/* News Preview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-        {newsItems.slice(0, 4).map((news, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 px-2 py-2">
+        {newsItems.slice(0, 5).map((news, index) => (
           <Card
             key={news.id}
             className={`cursor-pointer transition-all hover:shadow-md ${
@@ -209,7 +228,9 @@ export function NewsCarousel() {
               <Badge variant="secondary" className="text-xs mb-2">
                 {news.category}
               </Badge>
-              <h3 className="font-semibold text-sm line-clamp-2 mb-2">{news.title}</h3>
+              <h3 className="font-semibold text-sm line-clamp-2 mb-2">
+                {news.title}
+              </h3>
               <div className="flex items-center text-xs text-slate-500">
                 <Clock className="w-3 h-3 mr-1" />
                 {news.readTime}
@@ -219,5 +240,5 @@ export function NewsCarousel() {
         ))}
       </div>
     </div>
-  )
+  );
 }
