@@ -35,6 +35,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { NewsCarousel } from "@/components/news-carousel"
 ;
 
 export default function HomePage() {
@@ -124,6 +125,12 @@ export default function HomePage() {
                       Workshops
                     </Link>
                   </Button>
+                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+                    <Link href="/news">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      News
+                    </Link>
+                  </Button>
 
                   <Button variant="ghost" size="sm" className="relative" asChild>
                     <Link href="/notifications">
@@ -161,6 +168,12 @@ export default function HomePage() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link href="/news">
+                          <TrendingUp className="mr-2 h-4 w-4" />
+                          News
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link href="/notifications">
                           <Bell className="mr-2 h-4 w-4" />
                           Notifications
@@ -188,6 +201,12 @@ export default function HomePage() {
                       Workshops
                     </Link>
                   </Button>
+                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+                    <Link href="/news">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      News
+                    </Link>
+                  </Button>
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/signin">Sign In</Link>
                   </Button>
@@ -201,47 +220,42 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-12 lg:py-20">
+      {/* News Carousel Hero Section */}
+      <section className="py-8 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-slate-800 mb-6">
-              Where Data Professionals
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
-                Share Knowledge
-              </span>
-            </h1>
-            <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Join thousands of data scientists, analysts, and engineers sharing insights, solving problems, and
-              advancing the field of data analytics together.
-            </p>
+          <NewsCarousel />
+        </div>
+      </section>
 
-            {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-8 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-600">50K+</div>
-                <div className="text-slate-600">Active Members</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-teal-600">25K+</div>
-                <div className="text-slate-600">Questions Answered</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-600">100+</div>
-                <div className="text-slate-600">Expert Contributors</div>
-              </div>
-            </div>
+      {/* Community Stats */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-slate-800 mb-8">Join the Leading Data Community</h2>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
-                <Users className="w-5 h-5 mr-2" />
-                Join the Community
-              </Button>
-              <Button size="lg" variant="outline">
-                <BookOpen className="w-5 h-5 mr-2" />
-                Explore Topics
-              </Button>
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600">50K+</div>
+              <div className="text-slate-600">Active Members</div>
             </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-teal-600">25K+</div>
+              <div className="text-slate-600">Questions Answered</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-cyan-600">100+</div>
+              <div className="text-slate-600">Expert Contributors</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
+              <Users className="w-5 h-5 mr-2" />
+              Join the Community
+            </Button>
+            <Button size="lg" variant="outline">
+              <BookOpen className="w-5 h-5 mr-2" />
+              Explore Topics
+            </Button>
           </div>
         </div>
       </section>
