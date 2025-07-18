@@ -21,7 +21,7 @@ import {
   Trash2,
   Settings,
 } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../context/AuthContext" // <-- use correct AuthContext import
 import Link from "next/link"
 
 interface Notification {
@@ -39,7 +39,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
-  const { user } = useAuth()
+  const { user } = useAuth() // <-- use correct useAuth
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [filter, setFilter] = useState<"all" | "unread">("all")
 
@@ -305,7 +305,8 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               )}
-            </TabsContent>
+
+               </TabsContent>
           </Tabs>
         </div>
       </div>

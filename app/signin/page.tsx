@@ -11,14 +11,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BarChart3, Eye, EyeOff, Loader2 } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../context/AuthContext"
 
 export default function SignInPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
-  const { signIn, isLoading } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,11 +31,14 @@ export default function SignInPage() {
       return
     }
 
+    setIsLoading(true)
     try {
-      await signIn(email, password)
+      await login(email, password)
       router.push("/")
     } catch (err) {
       setError("Invalid email or password")
+    } finally {
+      setIsLoading(false)
     }
   }
 

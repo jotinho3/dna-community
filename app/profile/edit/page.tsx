@@ -12,11 +12,11 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ArrowLeft, Loader2, Save } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../../context/AuthContext" // <-- use correct AuthContext import
 import Link from "next/link"
 
 export default function EditProfilePage() {
-  const { user, updateProfile, isLoading } = useAuth()
+  const { user } = useAuth() // <-- use correct useAuth
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
@@ -27,6 +27,7 @@ export default function EditProfilePage() {
   })
   const [success, setSuccess] = useState("")
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -40,6 +41,23 @@ export default function EditProfilePage() {
     }
   }, [user])
 
+  // Dummy updateProfile function for demonstration
+  const updateProfile = async (data: typeof formData) => {
+    setIsLoading(true)
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1200))
+      setSuccess("Profile updated successfully!")
+      setTimeout(() => {
+        router.push(`/profile/${user?.uid}`)
+      }, 1500)
+    } catch {
+      setError("Failed to update profile. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -50,15 +68,7 @@ export default function EditProfilePage() {
       return
     }
 
-    try {
-      await updateProfile(formData)
-      setSuccess("Profile updated successfully!")
-      setTimeout(() => {
-        router.push(`/profile/${user?.id}`)
-      }, 1500)
-    } catch (err) {
-      setError("Failed to update profile. Please try again.")
-    }
+    await updateProfile(formData)
   }
 
   if (!user) {
@@ -81,7 +91,7 @@ export default function EditProfilePage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Button variant="ghost" asChild>
-            <Link href={`/profile/${user.id}`}>
+            <Link href={`/profile/${user.uid}`}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Profile
             </Link>
@@ -193,7 +203,7 @@ export default function EditProfilePage() {
                   )}
                 </Button>
                 <Button type="button" variant="outline" asChild>
-                  <Link href={`/profile/${user.id}`}>Cancel</Link>
+                  <Link href={`/profile/${user.uid}`}>Cancel</Link>
                 </Button>
               </div>
             </form>

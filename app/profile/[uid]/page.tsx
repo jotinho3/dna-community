@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,16 +18,18 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../../context/AuthContext"
 import Link from "next/link"
 
-export default function ProfilePage({ params }: { params: { id: string } }) {
+export default function ProfilePage({ params }: { params: Promise<{ uid: string }> }) {
   const { user } = useAuth()
-  const isOwnProfile = user?.id === params.id
+  const { uid } = React.use(params) // Unwrap params Promise
 
-  // Mock user data - in real app, fetch based on params.id
+  const isOwnProfile = user?.uid === uid
+
+  // Mock user data - in real app, fetch based on uid
   const profileUser = user || {
-    id: params.id,
+    uid,
     name: "Sarah Chen",
     email: "sarah.chen@example.com",
     avatar: "SC",
@@ -126,7 +129,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
                   Joined{" "}
-                  {new Date(profileUser.joinedDate).toLocaleDateString("en-US", {
+                  {new Date(profileUser.joinedDate ?? "").toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                   })}
@@ -150,7 +153,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-emerald-600 mb-2">
-                  {profileUser.reputation.toLocaleString()}
+                  {profileUser.reputation?.toLocaleString()}
                 </div>
                 <p className="text-sm text-slate-600">Community points earned</p>
               </CardContent>
@@ -187,7 +190,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {profileUser.badges.map((badge, index) => (
+                  {profileUser.badges?.map((badge, index) => (
                     <Badge key={index} variant="secondary" className="bg-amber-100 text-amber-700">
                       <Star className="w-3 h-3 mr-1" />
                       {badge}

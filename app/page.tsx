@@ -25,8 +25,8 @@ import {
   Settings,
   LogOut,
 } from "lucide-react"
+import { useAuth } from "./context/AuthContext"
 import Link from "next/link"
-import { useAuth } from "@/lib/auth-context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +39,7 @@ import { NewsCarousel } from "@/components/news-carousel"
 ;
 
 export default function HomePage() {
-  const { user, signOut } = useAuth()
+  const { user, logout } = useAuth()
 
   const categories = [
     { name: "Machine Learning", icon: Brain, count: "2.3k", color: "bg-emerald-100 text-emerald-700" },
@@ -143,7 +143,7 @@ export default function HomePage() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-emerald-100 text-emerald-700">{user.avatar}</AvatarFallback>
+                          <AvatarFallback className="bg-emerald-100 text-emerald-700">{user.name}</AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
@@ -156,7 +156,7 @@ export default function HomePage() {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href={`/profile/${user.id}`}>
+                        <Link href={`/profile/${user.uid}`}>
                           <User className="mr-2 h-4 w-4" />
                           Profile
                         </Link>
@@ -186,7 +186,7 @@ export default function HomePage() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={signOut}>
+                      <DropdownMenuItem onClick={logout}>
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign out
                       </DropdownMenuItem>

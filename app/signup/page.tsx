@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { BarChart3, Eye, EyeOff, Loader2 } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../context/AuthContext"
 
 export default function SignUpPage() {
   const [name, setName] = useState("")
@@ -22,8 +22,10 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [agreeToTerms, setAgreeToTerms] = useState(false)
   const [error, setError] = useState("")
-  const { signUp, isLoading } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  const { register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,11 +51,15 @@ export default function SignUpPage() {
       return
     }
 
+    setIsLoading(true)
     try {
-      await signUp(name, email, password)
+      // register will handle saveSession and context update
+      await register(name, email, password)
       router.push("/")
-    } catch (err) {
-      setError("Failed to create account. Please try again.")
+    } catch (err: any) {
+      setError(err.message || "Failed to create account. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -182,7 +188,7 @@ export default function SignUpPage() {
             </p>
           </div>
         </CardContent>
-      </Card>
+           </Card>
     </div>
   )
 }

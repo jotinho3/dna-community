@@ -14,11 +14,11 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Loader2, Send, Code, Bold, Italic, List, Link2, X, Plus, HelpCircle } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "../context/AuthContext" // <-- updated import path
 import Link from "next/link"
 
 export default function AskQuestionPage() {
-  const { user, isLoading } = useAuth()
+  const { user } = useAuth() // <-- get user from context
   const router = useRouter()
   const [formData, setFormData] = useState({
     title: "",
@@ -58,10 +58,10 @@ export default function AskQuestionPage() {
   ]
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (user === null) {
       router.push("/signin?redirect=/ask")
     }
-  }, [user, isLoading, router])
+  }, [user, router])
 
   const handleAddTag = (tag: string) => {
     if (tag && !formData.tags.includes(tag) && formData.tags.length < 5) {
@@ -114,14 +114,6 @@ export default function AskQuestionPage() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-      </div>
-    )
   }
 
   if (!user) {
@@ -366,6 +358,6 @@ export default function AskQuestionPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+     </div>
   )
 }
