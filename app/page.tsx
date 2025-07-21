@@ -1,5 +1,7 @@
 "use client"
 
+import { OnboardingModal } from "../components/OnboardingModal/OnboardingModal"
+import { useOnboarding } from "@/hooks/useOnboarding"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -40,6 +42,7 @@ import { NewsCarousel } from "@/components/news-carousel"
 
 export default function HomePage() {
   const { user, logout } = useAuth()
+    const { showOnboarding, setShowOnboarding, loading } = useOnboarding()
 
   const categories = [
     { name: "Machine Learning", icon: Brain, count: "2.3k", color: "bg-emerald-100 text-emerald-700" },
@@ -84,6 +87,7 @@ export default function HomePage() {
   ]
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -478,5 +482,12 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+
+    <OnboardingModal 
+        open={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
+      />
+    
+  </>
   )
 }
