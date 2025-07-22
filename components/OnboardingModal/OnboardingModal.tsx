@@ -46,7 +46,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
       }
 
       const response = await fetch(
-        `http://localhost:8080/api/users/onboarding-status/${user.uid}`
+        `https://render.com/docs/web-services#port-binding/api/users/onboarding-status/${user.uid}`
       );
 
       if (!response.ok) {

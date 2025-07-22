@@ -32,7 +32,7 @@ export const useOnboarding = () => {
     const checkOnboardingStatus = async () => {
       if (user?.uid) {
         try {
-          const response = await fetch(`http://localhost:8080/api/users/onboarding-status/${user.uid}`)
+          const response = await fetch(`https://render.com/docs/web-services#port-binding/api/users/onboarding-status/${user.uid}`)
           const data = await response.json()
           
           if (!data.hasCompletedOnboarding) {
@@ -72,7 +72,7 @@ export const useOnboarding = () => {
     if (!user?.uid) return
 
     try {
-      const response = await fetch(`http://localhost:8080/api/users/complete-onboarding/${user.uid}`, {
+      const response = await fetch(`https://render.com/docs/web-services#port-binding/api/users/complete-onboarding/${user.uid}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

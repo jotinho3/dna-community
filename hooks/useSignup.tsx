@@ -14,7 +14,7 @@ export function useSignup(): RegisterResult {
     setIsLoading(true)
     setError("")
     try {
-      const res = await fetch("http://localhost:8080/api/auth/signup", {
+      const res = await fetch("https://render.com/docs/web-services#port-binding/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
