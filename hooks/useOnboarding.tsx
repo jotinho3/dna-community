@@ -32,7 +32,7 @@ export const useOnboarding = () => {
     const checkOnboardingStatus = async () => {
       if (user?.uid) {
         try {
-          const response = await fetch(`https://dna-community-back.onrender.com/api/users/onboarding-status/${user.uid}`)
+          const response = await fetch(`http://localhost:8080/api/users/${user.uid}/onboarding/status`)
           const data = await response.json()
           
           if (!data.hasCompletedOnboarding) {
@@ -72,7 +72,7 @@ export const useOnboarding = () => {
     if (!user?.uid) return
 
     try {
-      const response = await fetch(`https://dna-community-back.onrender.com/api/users/complete-onboarding/${user.uid}`, {
+      const response = await fetch(`http://localhost:8080/api/users/${user.uid}/onboarding/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

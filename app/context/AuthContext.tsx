@@ -2,20 +2,37 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react"
 
+interface UserProfile {
+  bio?: string
+  experience: string
+  title: string;
+  interests: string[]
+  languages: string[]
+  location?: string
+  role: string
+  skills?: string[]
+  socialLinks?: {
+    linkedin?: string
+    github?: string
+    twitter?: string
+    portfolio?: string
+  }
+  tools: string[]
+  website?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface User {
   uid: string
   name: string
   email: string
-  avatar?: string
-  bio?: string
-  title?: string
-  location?: string
-  website?: string
-  joinedDate?: string
-  reputation?: number
-  questionsAsked?: number
-  answersGiven?: number
-  badges?: string[]
+  password?: string
+  engagement_xp: number
+  hasCompletedOnboarding: boolean
+  onboardingCompletedAt?: string
+  created_at: string
+  profile: UserProfile
 }
 
 interface AuthContextType {
@@ -33,10 +50,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
-    // Load from sessionStorage
     const storedToken = sessionStorage.getItem("token")
     const storedUser = sessionStorage.getItem("user")
     const expires = sessionStorage.getItem("tokenExpires")
+
     if (storedToken && storedUser && expires && Date.now() < Number(expires)) {
       setToken(storedToken)
       setUser(JSON.parse(storedUser))
@@ -54,19 +71,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch("https://dna-community-back.onrender.com/api/auth/signup", {
+    const res = await fetch("http://localhost:8080/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
     })
     if (!res.ok) throw new Error("Registration failed")
     const data = await res.json()
-    // Assume backend returns { token, user, expiresIn }
     saveSession(data.token, data.user, data.expiresIn)
   }
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("https://dna-community-back.onrender.com/api/auth/login", {
+    const res = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -90,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 }
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider")
-  return ctx
+  const context = useContext(AuthContext)
+  if (!context) throw new Error("useAuth must be used within an AuthProvider")
+  return context
 }
