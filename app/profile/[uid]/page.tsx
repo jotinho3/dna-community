@@ -97,7 +97,7 @@ export default function ProfilePage({
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/users/${uid}/profile?currentUserId=${user?.uid}`
+        `https://dna-community-back.onrender.com/api/users/${uid}/profile?currentUserId=${user?.uid}`
       );
 
       if (!response.ok) {

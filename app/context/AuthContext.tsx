@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch("http://localhost:8080/api/auth/signup", {
+    const res = await fetch("https://dna-community-back.onrender.com/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:8080/api/auth/login", {
+    const res = await fetch("https://dna-community-back.onrender.com/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

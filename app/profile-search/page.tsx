@@ -103,7 +103,7 @@ export default function UsersDiscoveryPage() {
       });
 
       const response = await fetch(
-        `http://localhost:8080/api/users/profiles?${params}`
+        `https://dna-community-back.onrender.com/api/users/profiles?${params}`
       );
 
       if (!response.ok) {
@@ -150,8 +150,8 @@ export default function UsersDiscoveryPage() {
 
     try {
       const endpoint = isCurrentlyFollowing
-        ? "http://localhost:8080/api/users/unfollow"
-        : "http://localhost:8080/api/users/follow";
+        ? "https://dna-community-back.onrender.com/api/users/unfollow"
+        : "https://dna-community-back.onrender.com/api/users/follow";
 
       const response = await fetch(endpoint, {
         method: "POST",
