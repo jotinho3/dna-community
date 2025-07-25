@@ -30,8 +30,6 @@ export function AskQuestionForm() {
     Array<{
       userId: string;
       userName: string;
-      startIndex: number;
-      endIndex: number;
     }>
   >([]);
 
@@ -77,7 +75,9 @@ export function AskQuestionForm() {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/qa/${user.uid}/questions`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/qa/${
+          user!.uid
+        }/questions`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -162,15 +162,14 @@ export function AskQuestionForm() {
               <Label htmlFor="body">Detalhes da pergunta *</Label>
               <MentionEditor
                 value={body}
-                userId={user?.uid} // Add this prop to enable following users fetch
-                onChange={(text, mentionsList) => {
+                userId={user?.uid}
+                onChange={(text) => {
                   setBody(text);
                 }}
                 onMentionsChange={(mentionsList) => {
                   setMentions(mentionsList);
                 }}
-                placeholder="Descreva sua dúvida, o que já tentou, exemplos, etc. Use @ para mencionar alguém."
-                minHeight="150px"
+                placeholder="Descreva sua dúvida detalhadamente. Inclua o que já tentou, exemplos de código, mensagens de erro, etc."
               />
 
               {mentions.length > 0 && (

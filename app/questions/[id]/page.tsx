@@ -55,9 +55,9 @@ export default function QuestionDetailPage({
     setLoading(true);
     setError(null);
     try {
-      const [q, a] = await Promise.all([
-        fetch(`http://localhost:8080/api/qa/questions/${questionId}`).then((res) => res.json()),
-        fetch(`http://localhost:8080/api/qa/questions/${questionId}/answers`).then((res) =>
+     const [q, a] = await Promise.all([
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/qa/questions/${questionId}`).then((res) => res.json()),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/qa/questions/${questionId}/answers`).then((res) =>
           res.json()
         ),
       ]);
@@ -227,7 +227,7 @@ export default function QuestionDetailPage({
                             variant="outline"
                             className="mb-2"
                             onClick={async () => {
-                              await fetch(`http://localhost:8080/api/qa/${user.uid}/answers/accept`, {
+                              await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/qa/${user.uid}/answers/accept`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
@@ -237,7 +237,7 @@ export default function QuestionDetailPage({
                               });
                               // Atualize a lista de respostas após aceitar
                               const res = await fetch(
-                                `http://localhost:8080/api/qa/questions/${question.id}/answers`
+                             `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/qa/questions/${question.id}/answers`
                               );
                               const data = await res.json();
                               setAnswers(data.answers || []);

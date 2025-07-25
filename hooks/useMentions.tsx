@@ -41,7 +41,7 @@ export const useMentions = (userId?: string) => {
       
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${userId}/following`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/users/${userId}/following`);
         if (response.ok) {
           const data = await response.json();
           
