@@ -1,14 +1,12 @@
-"use client"
+"use client";
 
-import { OnboardingModal } from "../components/OnboardingModal/OnboardingModal"
-import { useOnboarding } from "@/hooks/useOnboarding"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { OnboardingModal } from "../components/OnboardingModal/OnboardingModal";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Search,
   TrendingUp,
   Users,
   MessageSquare,
@@ -22,27 +20,32 @@ import {
   Star,
   Eye,
   ThumbsUp,
-  Bell,
-  User,
-  Settings,
-  LogOut,
-} from "lucide-react"
-import { useAuth } from "./context/AuthContext"
-import Link from "next/link"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { NewsCarousel } from "@/components/news-carousel"
-;
+  Loader2,
+} from "lucide-react";
+import { NewsCarousel } from "@/components/news-carousel";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface Question {
+  id: string;
+  title: string;
+  content: string;
+  authorName: string;
+  authorId: string;
+  authorAvatar?: string;
+  tags: string[];
+  answersCount: number;
+  reactions: any[];
+  createdAt: string;
+  isResolved: boolean;
+  mentions?: any[];
+}
 
 export default function HomePage() {
-  const { user, logout } = useAuth()
-    const { showOnboarding, setShowOnboarding, loading } = useOnboarding()
+  const { showOnboarding, setShowOnboarding } = useOnboarding();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const categories = [
     { name: "Machine Learning", icon: Brain, count: "2.3k", color: "bg-emerald-100 text-emerald-700" },
@@ -51,443 +54,290 @@ export default function HomePage() {
     { name: "Python", icon: Code, count: "3.1k", color: "bg-orange-100 text-orange-700" },
     { name: "Analytics Tools", icon: TrendingUp, count: "987", color: "bg-amber-100 text-amber-700" },
     { name: "AI & Deep Learning", icon: Zap, count: "1.2k", color: "bg-emerald-100 text-emerald-700" },
-  ]
+  ];
 
-  const questions = [
-    {
-      title: "What's the best approach to handle missing data in time series analysis?",
-      author: "Sarah Chen",
-      avatar: "SC",
-      tags: ["Time Series", "Data Cleaning", "Python"],
-      views: "2.3k",
-      answers: 12,
-      upvotes: 45,
-      timeAgo: "2h ago",
-    },
-    {
-      title: "How do you optimize SQL queries for large datasets in production?",
-      author: "Mike Rodriguez",
-      avatar: "MR",
-      tags: ["SQL", "Performance", "Big Data"],
-      views: "1.8k",
-      answers: 8,
-      upvotes: 32,
-      timeAgo: "4h ago",
-    },
-    {
-      title: "Best practices for feature engineering in machine learning pipelines?",
-      author: "Alex Kumar",
-      avatar: "AK",
-      tags: ["Machine Learning", "Feature Engineering", "MLOps"],
-      views: "3.1k",
-      answers: 15,
-      upvotes: 67,
-      timeAgo: "6h ago",
-    },
-  ]
+  // Fetch recent questions
+  useEffect(() => {
+    const fetchRecentQuestions = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        const response = await fetch(`${apiUrl}/api/qa/questions?limit=5&page=1&sort=newest`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch questions');
+        }
+
+        const data = await response.json();
+        setQuestions(data.questions || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error fetching questions');
+        console.error('Error fetching recent questions:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentQuestions();
+  }, []);
+
+  // Helper functions
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Agora mesmo';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m atrás`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d atrás`;
+    
+    return date.toLocaleDateString('pt-BR');
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getTotalReactions = (reactions: any[]) => {
+    return reactions?.length || 0;
+  };
 
   return (
     <>
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-800">DataHub</span>
-            </Link>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+        {/* News Carousel Hero Section */}
+        <section>
+          <div className="max-w-full">
+            <NewsCarousel />
+          </div>
+        </section>
 
-            {/* Search Bar */}
-            <div className="flex-1 max-w-2xl mx-8 hidden md:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input
-                  placeholder="Search questions, topics, or users..."
-                  className="pl-10 bg-slate-50 border-slate-200 focus:bg-white"
-                />
+        {/* Community Stats */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold text-slate-800 mb-8">Join the Leading Data Community</h2>
+
+            <div className="flex flex-wrap justify-center gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-emerald-600">50K+</div>
+                <div className="text-slate-600">Active Members</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-teal-600">25K+</div>
+                <div className="text-slate-600">Questions Answered</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-cyan-600">100+</div>
+                <div className="text-slate-600">Expert Contributors</div>
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-                <Link href="/ask">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Ask Question
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700" asChild>
+                <Link href="/signup">
+                  <Users className="w-5 h-5 mr-2" />
+                  Join the Community
                 </Link>
               </Button>
-
-              {user ? (
-                <>
-                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-                    <Link href="/workshops">
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      Workshops
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-                    <Link href="/news">
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      News
-                    </Link>
-                  </Button>
-
-                  <Button variant="ghost" size="sm" className="relative" asChild>
-                    <Link href="/notifications">
-                      <Bell className="w-4 h-4" />
-                      <Badge className="absolute -top-1 -right-1 w-2 h-2 p-0 bg-red-500" />
-                    </Link>
-                  </Button>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-emerald-100 text-emerald-700">{user.name}</AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                      <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{user.name}</p>
-                          <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                        </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href={`/profile/${user.uid}`}>
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/workshops">
-                          <BookOpen className="mr-2 h-4 w-4" />
-                          My Workshops
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/news">
-                          <TrendingUp className="mr-2 h-4 w-4" />
-                          News
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/notifications">
-                          <Bell className="mr-2 h-4 w-4" />
-                          Notifications
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/profile/edit">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={logout}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-                    <Link href="/workshops">
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      Workshops
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-                    <Link href="/news">
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      News
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/signin">Sign In</Link>
-                  </Button>
-                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" asChild>
-                    <Link href="/signup">Join Community</Link>
-                  </Button>
-                </>
-              )}
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* News Carousel Hero Section */}
-      <section>
-        <div className="max-w-full">
-          <NewsCarousel />
-        </div>
-      </section>
-
-      {/* Community Stats */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8">Join the Leading Data Community</h2>
-
-          <div className="flex flex-wrap justify-center gap-8 mb-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-600">50K+</div>
-              <div className="text-slate-600">Active Members</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-teal-600">25K+</div>
-              <div className="text-slate-600">Questions Answered</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-cyan-600">100+</div>
-              <div className="text-slate-600">Expert Contributors</div>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/questions">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Explore Topics
+                </Link>
+              </Button>
             </div>
           </div>
+        </section>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
-              <Users className="w-5 h-5 mr-2" />
-              Join the Community
-            </Button>
-            <Button size="lg" variant="outline">
-              <BookOpen className="w-5 h-5 mr-2" />
-              Explore Topics
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Popular Topics</h2>
-            <p className="text-slate-600">
-              Explore discussions across different areas of data analytics and technology
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-slate-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-lg ${category.color}`}>
-                      <category.icon className="w-6 h-6" />
-                    </div>
-                    <Badge variant="secondary">{category.count} questions</Badge>
-                  </div>
-                  <h3 className="font-semibold text-slate-800 mb-2">{category.name}</h3>
-                  <p className="text-sm text-slate-600">Join the discussion and share your expertise</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Questions */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">Recent Questions</h2>
-              <p className="text-slate-600">Latest discussions from our community</p>
-            </div>
-            <Button variant="outline">
-              View All <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-
-          <div className="space-y-6">
-            {questions.map((question, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <Avatar className="w-10 h-10">
-                      <AvatarFallback className="bg-emerald-100 text-emerald-700">{question.avatar}</AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-800 mb-2 hover:text-emerald-600 transition-colors">
-                        {question.title}
-                      </h3>
-
-                      <div className="flex items-center text-sm text-slate-600 mb-3">
-                        <span>Asked by {question.author}</span>
-                        <span className="mx-2">•</span>
-                        <span>{question.timeAgo}</span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {question.tags.map((tag, tagIndex) => (
-                          <Badge key={tagIndex} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center space-x-6 text-sm text-slate-500">
-                        <div className="flex items-center">
-                          <ThumbsUp className="w-4 h-4 mr-1" />
-                          {question.upvotes}
-                        </div>
-                        <div className="flex items-center">
-                          <MessageSquare className="w-4 h-4 mr-1" />
-                          {question.answers} answers
-                        </div>
-                        <div className="flex items-center">
-                          <Eye className="w-4 h-4 mr-1" />
-                          {question.views} views
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-emerald-600 to-teal-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Join the Conversation?</h2>
-          <p className="text-emerald-100 mb-8 text-lg">
-            Connect with data professionals, share your knowledge, and grow your career
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-emerald-600 hover:bg-slate-50">
-              <Star className="w-5 h-5 mr-2" />
-              Start Contributing
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-emerald-600 bg-transparent"
-            >
-              Ask Your First Question
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-800 text-slate-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">DataHub</span>
-              </div>
-              <p className="text-sm">
-                The premier community for data professionals to share knowledge and grow together.
+        {/* Categories Section */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-slate-800 mb-4">Popular Topics</h2>
+              <p className="text-slate-600">
+                Explore discussions across different areas of data analytics and technology
               </p>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-white mb-4">Community</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Questions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Topics
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Users
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Leaderboard
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-white mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Guidelines
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    API
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Privacy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-emerald-400">
-                    Terms
-                  </Link>
-                </li>
-              </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map((category, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-slate-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`p-3 rounded-lg ${category.color}`}>
+                        <category.icon className="w-6 h-6" />
+                      </div>
+                      <Badge variant="secondary">{category.count} questions</Badge>
+                    </div>
+                    <h3 className="font-semibold text-slate-800 mb-2">{category.name}</h3>
+                    <p className="text-sm text-slate-600">Join the discussion and share your expertise</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
+        </section>
 
-          <div className="border-t border-slate-700 mt-8 pt-8 text-center text-sm">
-            <p>&copy; 2024 DataHub. All rights reserved.</p>
+        {/* Recent Questions */}
+        <section className="py-16 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl font-bold text-slate-800 mb-4">Recent Questions</h2>
+                <p className="text-slate-600">Latest discussions from our community</p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link href="/questions">
+                  View All <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => window.location.reload()}
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : questions.length === 0 ? (
+              <div className="text-center py-12">
+                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 mb-4">No questions yet</p>
+                <Button asChild>
+                  <Link href="/ask">
+                    Ask the First Question
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {questions.map((question) => (
+                  <Card key={question.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="p-6">
+                      <Link href={`/questions/${question.id}`}>
+                        <div className="flex items-start space-x-4">
+                          <Avatar className="w-10 h-10">
+                            <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                              {getInitials(question.authorName)}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-slate-800 mb-2 hover:text-emerald-600 transition-colors">
+                              {question.title}
+                            </h3>
+
+                            <div className="flex items-center text-sm text-slate-600 mb-3">
+                              <span>Asked by {question.authorName}</span>
+                              <span className="mx-2">•</span>
+                              <span>{formatTimeAgo(question.createdAt)}</span>
+                              {question.isResolved && (
+                                <>
+                                  <span className="mx-2">•</span>
+                                  <Badge variant="default" className="bg-green-100 text-green-700 text-xs">
+                                    Resolved
+                                  </Badge>
+                                </>
+                              )}
+                            </div>
+
+                            {/* Content preview */}
+                            {question.content && (
+                              <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                                {question.content.substring(0, 150)}
+                                {question.content.length > 150 ? '...' : ''}
+                              </p>
+                            )}
+
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {question.tags.slice(0, 3).map((tag, tagIndex) => (
+                                <Badge key={tagIndex} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {question.tags.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{question.tags.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+
+                            <div className="flex items-center space-x-6 text-sm text-slate-500">
+                              <div className="flex items-center">
+                                <ThumbsUp className="w-4 h-4 mr-1" />
+                                {getTotalReactions(question.reactions)}
+                              </div>
+                              <div className="flex items-center">
+                                <MessageSquare className="w-4 h-4 mr-1" />
+                                {question.answersCount} answers
+                              </div>
+                              {question.mentions && question.mentions.length > 0 && (
+                                <div className="flex items-center">
+                                  <Users className="w-4 h-4 mr-1" />
+                                  {question.mentions.length} mentions
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </footer>
-    </div>
+        </section>
 
-    <OnboardingModal 
+        {/* CTA Section */}
+        <section className="py-16 bg-gradient-to-r from-emerald-600 to-teal-600">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Join the Conversation?</h2>
+            <p className="text-emerald-100 mb-8 text-lg">
+              Connect with data professionals, share your knowledge, and grow your career
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-white text-emerald-600 hover:bg-slate-50" asChild>
+                <Link href="/questions">
+                  <Star className="w-5 h-5 mr-2" />
+                  Start Contributing
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-emerald-600 bg-transparent"
+                asChild
+              >
+                <Link href="/ask">
+                  Ask Your First Question
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <OnboardingModal 
         open={showOnboarding} 
         onClose={() => setShowOnboarding(false)} 
       />
-    
-  </>
-  )
+    </>
+  );
 }

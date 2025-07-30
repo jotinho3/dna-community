@@ -1,5 +1,6 @@
 "use client"
 
+import { DatabaseBackup } from "lucide-react";
 import React, { createContext, useContext, useState, useEffect } from "react"
 
 interface UserProfile {
@@ -28,6 +29,7 @@ interface User {
   name: string
   email: string
   password?: string
+  avatar?: string
   engagement_xp: number
   hasCompletedOnboarding: boolean
   onboardingCompletedAt?: string
@@ -49,6 +51,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
 
+  // Get API URL from environment or use default
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+
   useEffect(() => {
     const storedToken = sessionStorage.getItem("token")
     const storedUser = sessionStorage.getItem("user")
@@ -56,13 +61,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (storedToken && storedUser && expires && Date.now() < Number(expires)) {
       setToken(storedToken)
-      setUser(JSON.parse(storedUser))
+      const parsedUser = JSON.parse(storedUser)
+      
+      // Ensure profile exists with default values
+      if (!parsedUser.profile) {
+        parsedUser.profile = {
+          role: 'user', // Default role
+          experience: '',
+          title: '',
+          interests: [],
+          languages: [],
+          tools: []
+        }
+      }
+      
+      setUser(parsedUser)
     } else {
       sessionStorage.clear()
     }
   }, [])
 
   const saveSession = (token: string, user: User, expiresIn: string) => {
+    // Ensure profile exists with default values
+    if (!user.profile) {
+      user.profile = {
+        role: 'user', // Default role
+        experience: '',
+        title: '',
+        interests: [],
+        languages: [],
+        tools: []
+      }
+    }
+    
     setToken(token)
     setUser(user)
     sessionStorage.setItem("token", token)
@@ -71,7 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch("https://dna-community-back.onrender.com/api/auth/signup", {
+    const res = await fetch(`${API_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -82,13 +113,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("https://dna-community-back.onrender.com/api/auth/login", {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     })
     if (!res.ok) throw new Error("Login failed")
     const data = await res.json()
+    console.log(data)
     saveSession(data.token, data.user, data.expiresIn)
   }
 
