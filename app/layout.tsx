@@ -1,24 +1,34 @@
-import type React from "react"
-import type { Metadata } from "next"
-import "./globals.css"
-import { AuthProvider } from "./context/AuthContext"
+"use client";
 
-export const metadata: Metadata = {
-  title: "Data Hub",
-  description: "Created with v0",
-  generator: "v0.dev",
-}
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>
-        <AuthProvider>{children}</AuthProvider>
+      <body className={inter.className}>
+        <AuthProvider>
+          <NotificationProvider>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </NotificationProvider>
+        </AuthProvider>
       </body>
     </html>
-  )
+  );
 }

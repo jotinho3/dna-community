@@ -1,235 +1,339 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
-  Search,
-  Clock,
-  Users,
-  Star,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   BookOpen,
-  Play,
-  Calendar,
+  Plus,
   TrendingUp,
   Brain,
   Database,
   Code,
   BarChart3,
   Zap,
-} from "lucide-react"
+  Calendar,
+  Users,
+  Award,
+  Clock,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useWorkshop } from "../../hooks/useWorkshops";
+import { WorkshopFilters, WorkshopCategory } from "../../types/workshop";
+import WorkshopList from "../../components/WorkshopList";
+import WorkshopCreationForm from "../../components/WorkshopCreationForm";
 
 export default function WorkshopsPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedLevel, setSelectedLevel] = useState("all")
+  const router = useRouter();
+  const { user } = useAuth();
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+
+  const {
+    workshops,
+    userEnrollments,
+    userCreatedWorkshops,
+    getUserCreatedWorkshops,
+    enrolledWorkshops,
+    upcomingWorkshops,
+    completedWorkshops,
+    userStats,
+    loading,
+    error,
+    getUserWorkshopStats,
+  } = useWorkshop();
+
+  // Load user stats on mount
+  useEffect(() => {
+    if (user?.uid) {
+      getUserWorkshopStats();
+      getUserCreatedWorkshops();
+    }
+  }, [user?.uid, getUserWorkshopStats, getUserCreatedWorkshops]);
 
   const categories = [
-    { id: "all", name: "All Categories", icon: BookOpen },
-    { id: "machine-learning", name: "Machine Learning", icon: Brain },
-    { id: "data-science", name: "Data Science", icon: BarChart3 },
-    { id: "databases", name: "Databases", icon: Database },
-    { id: "programming", name: "Programming", icon: Code },
-    { id: "analytics", name: "Analytics", icon: TrendingUp },
-    { id: "ai", name: "AI & Deep Learning", icon: Zap },
-  ]
+    { id: "all", name: "All Categories", icon: BookOpen, category: undefined },
+    {
+      id: "machine_learning",
+      name: "Machine Learning",
+      icon: Brain,
+      category: "machine_learning" as WorkshopCategory,
+    },
+    {
+      id: "data_analysis",
+      name: "Data Analysis",
+      icon: BarChart3,
+      category: "data_analysis" as WorkshopCategory,
+    },
+    {
+      id: "databases",
+      name: "Databases",
+      icon: Database,
+      category: "databases" as WorkshopCategory,
+    },
+    {
+      id: "programming",
+      name: "Programming",
+      icon: Code,
+      category: "programming" as WorkshopCategory,
+    },
+    {
+      id: "statistics",
+      name: "Statistics",
+      icon: TrendingUp,
+      category: "statistics" as WorkshopCategory,
+    },
+    {
+      id: "visualization",
+      name: "Visualization",
+      icon: Zap,
+      category: "visualization" as WorkshopCategory,
+    },
+  ];
 
-  const workshops = [
-    {
-      id: 1,
-      title: "Complete Machine Learning Bootcamp",
-      description:
-        "Master machine learning from basics to advanced topics including supervised, unsupervised learning, and neural networks.",
-      instructor: "Dr. Sarah Chen",
-      instructorAvatar: "SC",
-      category: "machine-learning",
-      level: "intermediate",
-      duration: "8 weeks",
-      students: 1247,
-      rating: 4.9,
-      price: 299,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["Python", "Scikit-learn", "TensorFlow", "Pandas"],
-      startDate: "2024-02-15",
-      isLive: true,
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "SQL for Data Analysis Masterclass",
-      description:
-        "Learn advanced SQL techniques for data analysis, including window functions, CTEs, and performance optimization.",
-      instructor: "Mike Rodriguez",
-      instructorAvatar: "MR",
-      category: "databases",
-      level: "intermediate",
-      duration: "4 weeks",
-      students: 892,
-      rating: 4.8,
-      price: 199,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["SQL", "PostgreSQL", "Data Analysis", "Optimization"],
-      startDate: "2024-02-20",
-      isLive: false,
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Python for Data Science Fundamentals",
-      description:
-        "Start your data science journey with Python. Learn pandas, numpy, matplotlib, and basic statistics.",
-      instructor: "Alex Kumar",
-      instructorAvatar: "AK",
-      category: "programming",
-      level: "beginner",
-      duration: "6 weeks",
-      students: 2156,
-      rating: 4.7,
-      price: 149,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["Python", "Pandas", "NumPy", "Matplotlib"],
-      startDate: "2024-02-10",
-      isLive: true,
-      featured: true,
-    },
-    {
-      id: 4,
-      title: "Deep Learning with TensorFlow",
-      description:
-        "Build and deploy deep learning models using TensorFlow. Cover CNNs, RNNs, and transformer architectures.",
-      instructor: "Dr. Emily Zhang",
-      instructorAvatar: "EZ",
-      category: "ai",
-      level: "advanced",
-      duration: "10 weeks",
-      students: 634,
-      rating: 4.9,
-      price: 399,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["TensorFlow", "Deep Learning", "Neural Networks", "Computer Vision"],
-      startDate: "2024-03-01",
-      isLive: false,
-      featured: false,
-    },
-    {
-      id: 5,
-      title: "Data Visualization with D3.js",
-      description: "Create stunning interactive data visualizations using D3.js and modern web technologies.",
-      instructor: "Jordan Smith",
-      instructorAvatar: "JS",
-      category: "analytics",
-      level: "intermediate",
-      duration: "5 weeks",
-      students: 445,
-      rating: 4.6,
-      price: 249,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["D3.js", "JavaScript", "Visualization", "Web Development"],
-      startDate: "2024-02-25",
-      isLive: true,
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Statistics for Data Science",
-      description:
-        "Master statistical concepts essential for data science including hypothesis testing, regression, and Bayesian methods.",
-      instructor: "Prof. Lisa Wang",
-      instructorAvatar: "LW",
-      category: "data-science",
-      level: "intermediate",
-      duration: "7 weeks",
-      students: 789,
-      rating: 4.8,
-      price: 229,
-      image: "/placeholder.svg?height=200&width=300",
-      tags: ["Statistics", "R", "Hypothesis Testing", "Regression"],
-      startDate: "2024-03-05",
-      isLive: false,
-      featured: true,
-    },
-  ]
+  const handleWorkshopCreated = (workshopId: string) => {
+    setShowCreateForm(false);
+    router.push(`/workshops/${workshopId}`);
+  };
 
-  const filteredWorkshops = workshops.filter((workshop) => {
-    const matchesSearch =
-      workshop.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      workshop.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      workshop.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  const handleWorkshopSelect = (workshopId: string) => {
+    router.push(`/workshops/${workshopId}`);
+  };
 
-    const matchesCategory = selectedCategory === "all" || workshop.category === selectedCategory
-    const matchesLevel = selectedLevel === "all" || workshop.level === selectedLevel
+  const getTabFilters = (tab: string): WorkshopFilters => {
+    switch (tab) {
+      case "published":
+        return { status: "published" };
+      case "upcoming":
+        return {
+          status: "published",
+          startDate: new Date().toISOString().split("T")[0],
+        };
+      case "free":
+        return { status: "published", price: "free" };
+      case "recorded":
+        return { status: "published", isRecorded: true };
+      default:
+        return { status: "published" };
+    }
+  };
 
-    return matchesSearch && matchesCategory && matchesLevel
-  })
+  if (showCreateForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowCreateForm(false)}
+              className="mb-4"
+            >
+              ← Back to Workshops
+            </Button>
+          </div>
 
-  const featuredWorkshops = workshops.filter((w) => w.featured)
+          <WorkshopCreationForm
+            onWorkshopCreated={handleWorkshopCreated}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-slate-800 mb-4">Data Science Workshops</h1>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Level up your data skills with hands-on workshops taught by industry experts
-            </p>
+          <div className="flex flex-col lg:flex-row items-center justify-between">
+            <div className="text-center lg:text-left mb-6 lg:mb-0">
+              <h1 className="text-4xl font-bold text-slate-800 mb-4">
+                Data Science Workshops
+              </h1>
+              <p className="text-xl text-slate-600 max-w-3xl">
+                Level up your data skills with hands-on workshops taught by
+                industry experts
+              </p>
+            </div>
+
+            {user && (
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Workshop
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <Input
-                placeholder="Search workshops, topics, or instructors..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* User Dashboard (if logged in) */}
+        {user && userStats && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">
+              Your Workshop Journey
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <BookOpen className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-600">
+                        Total Enrollments
+                      </p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {userStats.totalEnrollments}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Award className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-600">Completed</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {userStats.completedWorkshops}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <Award className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-600">Certificates</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {userStats.certificatesEarned}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <Calendar className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-600">Upcoming</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {userStats.upcomingWorkshops}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Access to User's Workshops */}
+            {upcomingWorkshops.length > 0 && (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Your Upcoming Workshops
+                  </CardTitle>
+                  <CardDescription>
+                    Workshops you're enrolled in that are starting soon
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {upcomingWorkshops.slice(0, 3).map((workshop) => (
+                      <div
+                        key={workshop.id}
+                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                        onClick={() => handleWorkshopSelect(workshop.id)}
+                      >
+                        <div className="flex-1">
+                          <h4 className="font-medium text-slate-900">
+                            {workshop.title}
+                          </h4>
+                          <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                            <span className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {new Date(
+                                workshop.scheduledDate
+                              ).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center">
+                              <Clock className="w-4 h-4 mr-1" />
+                              {workshop.startTime}
+                            </span>
+                            <Badge variant="secondary" className="capitalize">
+                              {workshop.difficulty}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {upcomingWorkshops.length > 3 && (
+                    <div className="mt-4 text-center">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setActiveTab("my-enrollments")}
+                      >
+                        View All ({upcomingWorkshops.length})
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Category Filters */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">
+            Browse by Category
+          </h3>
+          <div className="flex flex-wrap gap-3">
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
+                variant="outline"
                 size="sm"
-                onClick={() => setSelectedCategory(category.id)}
-                className={selectedCategory === category.id ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+                onClick={() => {
+                  setActiveTab("category");
+                  // You could set a category filter here
+                }}
+                className="flex items-center hover:bg-emerald-50 hover:border-emerald-200"
               >
                 <category.icon className="w-4 h-4 mr-2" />
                 {category.name}
@@ -238,201 +342,271 @@ export default function WorkshopsPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:w-96">
+        {/* Main Content Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
             <TabsTrigger value="all">All Workshops</TabsTrigger>
-            <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="free">Free</TabsTrigger>
+            <TabsTrigger value="recorded">Recorded</TabsTrigger>
+            {user && (
+              <>
+                <TabsTrigger value="my-enrollments">My Enrollments</TabsTrigger>
+                <TabsTrigger value="my-workshops">My Workshops</TabsTrigger>
+              </>
+            )}
           </TabsList>
 
-          <TabsContent value="all" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredWorkshops.map((workshop) => (
-                <Card key={workshop.id} className="hover:shadow-lg transition-shadow">
-                  <div className="relative">
-                    <img
-                      src={workshop.image || "/placeholder.svg"}
-                      alt={workshop.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                    {workshop.isLive && (
-                      <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
-                        <Play className="w-3 h-3 mr-1" />
-                        Live
-                      </Badge>
-                    )}
-                    {workshop.featured && (
-                      <Badge className="absolute top-2 left-2 bg-amber-500 hover:bg-amber-600">
-                        <Star className="w-3 h-3 mr-1" />
-                        Featured
-                      </Badge>
-                    )}
-                  </div>
-
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg mb-2">{workshop.title}</CardTitle>
-                        <CardDescription className="text-sm line-clamp-2">{workshop.description}</CardDescription>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4 text-sm text-slate-600">
-                      <div className="flex items-center">
-                        <Avatar className="w-6 h-6 mr-2">
-                          <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
-                            {workshop.instructorAvatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        {workshop.instructor}
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <div className="flex flex-wrap gap-1">
-                      {workshop.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {workshop.tags.length > 3 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{workshop.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm text-slate-600">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {workshop.duration}
-                        </div>
-                        <div className="flex items-center">
-                          <Users className="w-4 h-4 mr-1" />
-                          {workshop.students.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 mr-1 text-amber-500" />
-                        {workshop.rating}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm text-slate-600">
-                          Starts {new Date(workshop.startDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className={`capitalize ${
-                          workshop.level === "beginner"
-                            ? "border-green-200 text-green-700"
-                            : workshop.level === "intermediate"
-                              ? "border-amber-200 text-amber-700"
-                              : "border-red-200 text-red-700"
-                        }`}
-                      >
-                        {workshop.level}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-2xl font-bold text-emerald-600">${workshop.price}</div>
-                      <Button className="bg-emerald-600 hover:bg-emerald-700">Enroll Now</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          {/* All Workshops */}
+          <TabsContent value="all">
+            <WorkshopList
+              initialFilters={getTabFilters("all")}
+              onWorkshopSelect={handleWorkshopSelect}
+              showFilters={true}
+            />
           </TabsContent>
 
-          <TabsContent value="featured" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredWorkshops.map((workshop) => (
-                <Card key={workshop.id} className="hover:shadow-lg transition-shadow border-emerald-200">
-                  <div className="relative">
-                    <img
-                      src={workshop.image || "/placeholder.svg"}
-                      alt={workshop.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                    <Badge className="absolute top-2 left-2 bg-amber-500 hover:bg-amber-600">
-                      <Star className="w-3 h-3 mr-1" />
-                      Featured
-                    </Badge>
-                    {workshop.isLive && (
-                      <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
-                        <Play className="w-3 h-3 mr-1" />
-                        Live
-                      </Badge>
-                    )}
+          {/* Upcoming Workshops */}
+          <TabsContent value="upcoming">
+            <WorkshopList
+              initialFilters={getTabFilters("upcoming")}
+              onWorkshopSelect={handleWorkshopSelect}
+              showFilters={true}
+            />
+          </TabsContent>
+
+          {/* Free Workshops */}
+          <TabsContent value="free">
+            <WorkshopList
+              initialFilters={getTabFilters("free")}
+              onWorkshopSelect={handleWorkshopSelect}
+              showFilters={true}
+            />
+          </TabsContent>
+
+          {/* Recorded Workshops */}
+          <TabsContent value="recorded">
+            <WorkshopList
+              initialFilters={getTabFilters("recorded")}
+              onWorkshopSelect={handleWorkshopSelect}
+              showFilters={true}
+            />
+          </TabsContent>
+
+          {/* User's Enrollments */}
+          {user && (
+            <TabsContent value="my-enrollments">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-slate-900">
+                    Your Enrolled Workshops
+                  </h3>
+                  <Badge variant="secondary">
+                    {enrolledWorkshops.length} enrolled
+                  </Badge>
+                </div>
+
+                {enrolledWorkshops.length === 0 ? (
+                  <div className="text-center py-12">
+                    <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-600 mb-2">
+                      No enrolled workshops
+                    </h3>
+                    <p className="text-slate-500 mb-4">
+                      Start learning by enrolling in workshops that interest
+                      you.
+                    </p>
+                    <Button
+                      onClick={() => setActiveTab("all")}
+                      className="bg-emerald-600 hover:bg-emerald-700"
+                    >
+                      Browse Workshops
+                    </Button>
                   </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {enrolledWorkshops.map((workshop) => (
+                      <Card
+                        key={workshop.id}
+                        className="hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => handleWorkshopSelect(workshop.id)}
+                      >
+                        <CardHeader>
+                          <CardTitle className="text-lg">
+                            {workshop.title}
+                          </CardTitle>
+                          <CardDescription className="line-clamp-2">
+                            {workshop.shortDescription || workshop.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex items-center space-x-4 text-sm text-slate-600">
+                            <span className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {new Date(
+                                workshop.scheduledDate
+                              ).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center">
+                              <Clock className="w-4 h-4 mr-1" />
+                              {workshop.startTime}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="capitalize">
+                              {workshop.difficulty}
+                            </Badge>
+                            <Badge variant="outline">
+                              <Badge variant="outline">
+                                {workshop.format?.replace("_", " ") ||
+                                  "Not specified"}
+                              </Badge>
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          )}
 
-                  <CardHeader>
-                    <CardTitle className="text-lg mb-2">{workshop.title}</CardTitle>
-                    <CardDescription className="text-sm">{workshop.description}</CardDescription>
+          {/* User's Created Workshops */}
+          {user && (
+            <TabsContent value="my-workshops">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-slate-900">
+                    Workshops You Created
+                  </h3>
+                  <Button
+                    onClick={() => setShowCreateForm(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create New Workshop
+                  </Button>
+                </div>
 
-                    <div className="flex items-center space-x-4 text-sm text-slate-600">
-                      <div className="flex items-center">
-                        <Avatar className="w-6 h-6 mr-2">
-                          <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
-                            {workshop.instructorAvatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        {workshop.instructor}
-                      </div>
-                    </div>
-                  </CardHeader>
+                {userCreatedWorkshops.length === 0 ? (
+                  <div className="text-center py-12">
+                    <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-600 mb-2">
+                      No workshops created yet
+                    </h3>
+                    <p className="text-slate-500 mb-4">
+                      Share your knowledge by creating your first workshop.
+                    </p>
+                    <Button
+                      onClick={() => setShowCreateForm(true)}
+                      className="bg-emerald-600 hover:bg-emerald-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Your First Workshop
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {userCreatedWorkshops.map((workshop) => (
+                      <Card
+                        key={workshop.id}
+                        className="hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => handleWorkshopSelect(workshop.id)}
+                      >
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg">
+                              {workshop.title}
+                            </CardTitle>
+                            <Badge
+                              variant={
+                                workshop.status === "published"
+                                  ? "default"
+                                  : workshop.status === "draft"
+                                  ? "secondary"
+                                  : workshop.status === "cancelled"
+                                  ? "destructive"
+                                  : "outline"
+                              }
+                              className="capitalize"
+                            >
+                              {workshop.status}
+                            </Badge>
+                          </div>
+                          <CardDescription className="line-clamp-2">
+                            {workshop.shortDescription || workshop.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex items-center space-x-4 text-sm text-slate-600">
+                            <span className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {new Date(
+                                workshop.scheduledDate
+                              ).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center">
+                              <Clock className="w-4 h-4 mr-1" />
+                              {workshop.startTime}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="secondary" className="capitalize">
+                                {workshop.difficulty}
+                              </Badge>
+                              <Badge variant="outline">
+                                {workshop.format?.replace("_", " ") ||
+                                  "Not specified"}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center text-sm text-slate-600">
+                              <Users className="w-4 h-4 mr-1" />
+                              {workshop.currentEnrollments}/
+                              {workshop.maxParticipants}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
 
-                  <CardContent className="space-y-4">
-                    <div className="flex flex-wrap gap-1">
-                      {workshop.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                {loading && (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+                    <p className="text-slate-600">Loading your workshops...</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          )}
 
-                    <div className="flex items-center justify-between text-sm text-slate-600">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {workshop.duration}
-                        </div>
-                        <div className="flex items-center">
-                          <Users className="w-4 h-4 mr-1" />
-                          {workshop.students.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 mr-1 text-amber-500" />
-                        {workshop.rating}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-2xl font-bold text-emerald-600">${workshop.price}</div>
-                      <Button className="bg-emerald-600 hover:bg-emerald-700">Enroll Now</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          {/* Category View */}
+          <TabsContent value="category">
+            <WorkshopList
+              onWorkshopSelect={handleWorkshopSelect}
+              showFilters={true}
+            />
           </TabsContent>
         </Tabs>
 
-        {filteredWorkshops.length === 0 && (
+        {/* Error Display */}
+        {error && (
+          <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && workshops.length === 0 && (
           <div className="text-center py-12">
-            <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">No workshops found</h3>
-            <p className="text-slate-500">Try adjusting your search criteria or browse all workshops.</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+            <p className="text-slate-600">Loading workshops...</p>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
