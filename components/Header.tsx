@@ -39,7 +39,7 @@ export default function Header() {
             <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-800">DataHub</span>
+            <span className="text-xl font-bold text-slate-800">DNA Hub</span>
           </Link>
 
           {/* Search Bar */}
@@ -56,7 +56,7 @@ export default function Header() {
           {/* Navigation */}
           <nav className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-              <Link href="/ask">
+              <Link href="/quenstions/ask">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Ask Question
               </Link>
