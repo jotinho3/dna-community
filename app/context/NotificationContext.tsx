@@ -352,6 +352,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     // Poll for new notifications every 30 seconds
     const interval = setInterval(() => {
+      fetchNotifications();
       getUnreadCount();
     }, 30000);
 

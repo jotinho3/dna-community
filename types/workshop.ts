@@ -47,6 +47,9 @@ export interface Workshop {
   currentEnrollments: number;
   waitlistCount: number;
   enrollmentDeadline?: string; // ISO date string
+  enrolledCount?: number; // Total enrolled users
+  canEnroll?: boolean; // Whether the user can enroll
+  remainingSpots?: number;
   
   // Content and requirements
   prerequisites?: string[];

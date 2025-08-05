@@ -147,26 +147,38 @@ constructor(apiUrl: string = 'http://localhost:8080') {
   }
 
   // Workshop CRUD Operations
-  async getWorkshops(filters?: {
+ async getWorkshops(filters?: {
   status?: WorkshopStatus;
   category?: string;
   creatorId?: string;
   search?: string;
   page?: number;
   limit?: number;
-}): Promise<{ workshops: Workshop[]; pagination: any }> {
+}, uid?: string): Promise<{ workshops: Workshop[]; pagination: any }> {
+  
+  // uid is now required for the available workshops endpoint
+  if (!uid) {
+    throw new Error('User ID is required to fetch available workshops');
+  }
+  
   const params = new URLSearchParams();
   
   if (filters) {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
+        // Skip uid and status from query params since they're handled differently
+        if (key !== 'uid' && key !== 'status') {
+          params.append(key, value.toString());
+        }
       }
     });
   }
 
-  // Use the /available endpoint for getting workshops
-  const response = await fetch(`${this.baseUrl}/available`);
+  // Use the new endpoint with uid in the path
+  const queryString = params.toString();
+  const url = `${this.baseUrl}/${uid}/available${queryString ? `?${queryString}` : ''}`;
+  
+  const response = await fetch(url);
   
   if (!response.ok) {
     throw new Error(`Failed to fetch workshops: ${response.statusText}`);
@@ -184,6 +196,27 @@ constructor(apiUrl: string = 'http://localhost:8080') {
 
     return response.json();
   }
+
+  async getWorkshopParticipants(workshopId: string, uid: string): Promise<any[]> {
+  try {
+    const response = await fetch(`${this.baseUrl}/${workshopId}/${uid}/participants`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch workshop participants: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.participants || [];
+  } catch (error) {
+    console.error('Error fetching workshop participants:', error);
+    throw error;
+  }
+}
 
   async createWorkshop(workshopData: Omit<Workshop, 'id' | 'createdAt' | 'updatedAt'>, uid: string): Promise<Workshop> {
   const response = await fetch(`${this.baseUrl}/${uid}`, {
@@ -282,65 +315,41 @@ async publishWorkshop(workshopId: string, uid: string): Promise<Workshop> {
   }
 
   // Enrollment Operations
-  async enrollInWorkshop(workshopId: string, userId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${workshopId}/enroll`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId }),
-    });
+async enrollInWorkshop(workshopId: string, userId: string): Promise<void> {
+  const response = await fetch(`${this.baseUrl}/${workshopId}/${userId}/enroll`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId }),
+  });
 
-    if (!response.ok) {
-      if (response.status === 409) {
-        throw new Error('Already enrolled in this workshop');
-      }
-      throw new Error(`Failed to enroll in workshop: ${response.statusText}`);
+  if (!response.ok) {
+    if (response.status === 409) {
+      throw new Error('Already enrolled in this workshop');
     }
-
-    const result = await response.json();
-    const workshop = result.workshop;
-    const enrollment = result.enrollment;
-
-    // Send enrollment confirmation notification
-    await this.createNotification(userId, 'workshop_enrollment_confirmation', {
-      workshopId: workshop.id,
-      workshopTitle: workshop.title,
-      workshopDate: workshop.scheduledDate,
-      workshopTime: workshop.startTime,
-      creatorId: workshop.creatorId,
-      creatorName: workshop.creatorName,
-    });
-
-    // If user was moved from waitlist
-    if (enrollment.previousStatus === 'waitlisted') {
-      await this.createNotification(userId, 'waitlist_promoted', {
-        workshopId: workshop.id,
-        workshopTitle: workshop.title,
-        workshopDate: workshop.scheduledDate,
-        workshopTime: workshop.startTime,
-        creatorId: workshop.creatorId,
-        creatorName: workshop.creatorName,
-      });
-    }
-
-    // Schedule reminder notifications (this would typically be done by backend scheduler)
-    this.scheduleReminders(workshop, userId);
+    throw new Error(`Failed to enroll in workshop: ${response.statusText}`);
   }
 
-  async unenrollFromWorkshop(workshopId: string, userId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${workshopId}/unenroll`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId }),
-    });
+  const result = await response.json();
+  const workshop = result.workshop;
 
-    if (!response.ok) {
-      throw new Error(`Failed to unenroll from workshop: ${response.statusText}`);
-    }
+  // Schedule reminder notifications (this would typically be done by backend scheduler)
+  this.scheduleReminders(workshop, userId);
+}
+
+async unenrollFromWorkshop(workshopId: string, userId: string): Promise<void> {
+  const response = await fetch(`${this.baseUrl}/${workshopId}/${userId}/enroll`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to unenroll from workshop: ${response.statusText}`);
   }
+}
 
   async getWorkshopEnrollments(workshopId: string): Promise<WorkshopEnrollment[]> {
     const response = await fetch(`${this.baseUrl}/${workshopId}/enrollments`);
@@ -353,15 +362,22 @@ async publishWorkshop(workshopId: string, uid: string): Promise<Workshop> {
   }
 
   async getUserEnrollments(userId: string, status?: EnrollmentStatus): Promise<WorkshopEnrollment[]> {
-    const params = status ? `?status=${status}` : '';
-    const response = await fetch(`${this.baseUrl}/${userId}/enrollments${params}`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch user enrollments: ${response.statusText}`);
-    }
-
-    return response.json();
+  // Remove the status parameter since backend doesn't support it
+  const response = await fetch(`${this.baseUrl}/${userId}/enrollments`);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user enrollments: ${response.statusText}`);
   }
+
+  const enrollments = await response.json();
+  
+  // If status filtering is needed, do it on the frontend
+  if (status) {
+    return enrollments.filter((enrollment: WorkshopEnrollment) => enrollment.status === status);
+  }
+  
+  return enrollments;
+}
 
   async getEnrollmentStatus(workshopId: string, userId: string): Promise<{ enrolled: boolean; status: EnrollmentStatus | null }> {
     const response = await fetch(`${this.baseUrl}/${workshopId}/enrollment/${userId}`);

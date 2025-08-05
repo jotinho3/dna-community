@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import WorkshopCard from './WorkshopCard';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface WorkshopListProps {
   initialFilters?: WorkshopFilters;
@@ -29,6 +30,7 @@ const WorkshopList: React.FC<WorkshopListProps> = ({
   onWorkshopSelect,
   className = '',
 }) => {
+  const { user, isLoading: authLoading } = useAuth();
   const [filters, setFilters] = useState<WorkshopFilters>(initialFilters);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -51,12 +53,17 @@ const WorkshopList: React.FC<WorkshopListProps> = ({
   } = useWorkshop();
 
   // Load workshops when filters change
-  useEffect(() => {
+   useEffect(() => {
     const loadWorkshops = async () => {
-      await getWorkshops(filters);
+      // Wait for auth to complete before fetching workshops
+      if (!authLoading) {
+        await getWorkshops(filters);
+      }
     };
     loadWorkshops();
-  }, [filters, getWorkshops]);
+  }, [filters, getWorkshops, authLoading]);
+
+  
 
   // Filter update handlers
   const handleFilterChange = (key: keyof WorkshopFilters, value: any) => {
@@ -143,6 +150,15 @@ const formats: { value: WorkshopFormat | 'all'; label: string }[] = [
             Try Again
           </Button>
         </div>
+      </div>
+    );
+  }
+
+   if (authLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+        <span className="ml-2">Loading...</span>
       </div>
     );
   }
@@ -422,7 +438,7 @@ const formats: { value: WorkshopFormat | 'all'; label: string }[] = [
                 key={workshop.id}
                 workshop={workshop}
                 isEnrolled={isEnrolled(workshop.id)}
-                canEnroll={canEnroll(workshop)}
+                canEnroll={workshop.canEnroll ?? false}
                 onEnroll={() => handleEnroll(workshop.id)}
                 onUnenroll={() => handleUnenroll(workshop.id)}
                 onViewDetails={() => onWorkshopSelect?.(workshop.id)}
@@ -430,6 +446,7 @@ const formats: { value: WorkshopFormat | 'all'; label: string }[] = [
                 formattedDate={formatWorkshopDate(workshop)}
                 formattedTime={formatWorkshopTime(workshop)}
                 enrollmentLoading={enrollmentLoading}
+                onRefresh={() => window.location.reload()} 
               />
             ))}
           </div>

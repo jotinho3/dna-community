@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import toast, { Toaster } from 'react-hot-toast';
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import LiveIndicator from "../../../components/LiveIndicator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
@@ -38,12 +40,18 @@ import { useAuth } from "../../context/AuthContext";
 import { useWorkshop } from "../../../hooks/useWorkshops";
 import { Workshop, WorkshopStatus } from "../../../types/workshop";
 import WorkshopEditForm from "../../../components/WorkshopEditorForm";
+import WorkshopEnrollmentTab from "../../../components/WorkshopEnrollmentTab";
 
-export default function WorkshopDetailPage() {
+export default function WorkshopDetailPage({
+  params,
+}: {
+  params: Promise<{ workshopId: string }>;
+}) {
   const router = useRouter();
-  const params = useParams();
   const { user } = useAuth();
-  const workshopId = params.workshopId as string;
+
+  // Use React.use() to unwrap the Promise
+  const { workshopId } = React.use(params);
 
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -53,11 +61,14 @@ export default function WorkshopDetailPage() {
     loading,
     error,
     enrollmentLoading,
+    participants,
+    participantsLoading,
     getWorkshop,
     enrollInWorkshop,
     unenrollFromWorkshop,
     publishWorkshop,
     updateWorkshop,
+    getWorkshopParticipants,
     isEnrolled,
     canEnroll,
     getWorkshopStatus,
@@ -66,30 +77,223 @@ export default function WorkshopDetailPage() {
     clearError,
   } = useWorkshop();
 
-  // Load workshop data
-  useEffect(() => {
-    if (workshopId) {
-      getWorkshop(workshopId);
-    }
-  }, [workshopId, getWorkshop]);
-
   const isCreator = user?.uid === currentWorkshop?.creatorId;
   const enrolled = currentWorkshop ? isEnrolled(currentWorkshop.id) : false;
-  const canEnrollInWorkshop = currentWorkshop ? canEnroll(currentWorkshop) : false;
-  const workshopStatus = currentWorkshop ? getWorkshopStatus(currentWorkshop) : '';
+  const canEnrollInWorkshop = currentWorkshop
+    ? canEnroll(currentWorkshop)
+    : false;
+  const workshopStatus = currentWorkshop
+    ? getWorkshopStatus(currentWorkshop)
+    : "";
+
+    const parseFirestoreTimestamp = (timestamp: any): Date => {
+  if (timestamp && timestamp._seconds) {
+    // Firestore timestamp
+    return new Date(timestamp._seconds * 1000 + (timestamp._nanoseconds || 0) / 1000000);
+  } else if (typeof timestamp === 'string') {
+    // ISO string
+    return new Date(timestamp);
+  } else if (timestamp instanceof Date) {
+    // Already a Date object
+    return timestamp;
+  } else {
+    // Fallback to current date
+    console.warn('Unknown timestamp format:', timestamp);
+    return new Date();
+  }
+};
+
+const createWorkshopDateTime = (scheduledDate: any, time: string) => {
+  // Handle Firestore timestamp format
+  let date;
+  if (scheduledDate && scheduledDate._seconds) {
+    // Convert Firestore timestamp to Date
+    date = new Date(scheduledDate._seconds * 1000 + (scheduledDate._nanoseconds || 0) / 1000000);
+  } else if (typeof scheduledDate === 'string') {
+    date = new Date(scheduledDate);
+  } else {
+    date = new Date(scheduledDate);
+  }
+  
+  // Extract date components in UTC to avoid timezone conversion issues
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+  
+  // Parse time with error handling
+  if (!time || typeof time !== 'string') {
+    console.warn('Invalid time provided:', time);
+    return new Date(year, month, day, 0, 0, 0, 0); // Default to midnight
+  }
+  
+  const timeParts = time.split(':');
+  if (timeParts.length !== 2) {
+    console.warn('Invalid time format:', time);
+    return new Date(year, month, day, 0, 0, 0, 0); // Default to midnight
+  }
+  
+  const hours = parseInt(timeParts[0], 10);
+  const minutes = parseInt(timeParts[1], 10);
+  
+  if (isNaN(hours) || isNaN(minutes)) {
+    console.warn('Invalid time values:', time);
+    return new Date(year, month, day, 0, 0, 0, 0); // Default to midnight
+  }
+  
+  // Create final datetime in local timezone
+  const result = new Date(year, month, day, hours, minutes, 0, 0);
+  
+  console.log("=== createWorkshopDateTime DEBUG ===");
+  console.log("Input scheduledDate:", scheduledDate);
+  console.log("Input time:", time);
+  console.log("Parsed date (UTC):", date.toISOString());
+  console.log("UTC Date components:", { year, month, day });
+  console.log("Final result:", result.toISOString());
+  console.log("Final result (local):", result.toLocaleString());
+  
+  return result;
+};
+
+const hasWorkshopStarted = () => {
+  if (!currentWorkshop || !currentWorkshop.startTime) return false;
+
+  const now = new Date();
+  const workshopStart = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.startTime
+  );
+
+  console.log("=== hasWorkshopStarted DEBUG ===");
+  console.log("Now:", now.toLocaleString());
+  console.log("Now (ISO):", now.toISOString());
+  console.log("Workshop Start:", workshopStart.toLocaleString());
+  console.log("Workshop Start (ISO):", workshopStart.toISOString());
+  console.log("Time difference (minutes):", (workshopStart.getTime() - now.getTime()) / (1000 * 60));
+  console.log("Has Started:", now >= workshopStart);
+
+  return now >= workshopStart;
+};
+
+const hasWorkshopOccurred = () => {
+  if (!currentWorkshop || !currentWorkshop.endTime) return false;
+
+  const now = new Date();
+  const workshopEnd = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.endTime
+  );
+
+  console.log("=== hasWorkshopOccurred DEBUG ===");
+  console.log("Now:", now.toLocaleString());
+  console.log("Workshop End:", workshopEnd.toLocaleString());
+  console.log("Time difference (minutes):", (workshopEnd.getTime() - now.getTime()) / (1000 * 60));
+  console.log("Has Occurred:", now > workshopEnd);
+
+  return now > workshopEnd;
+};
+
+  const canEditWorkshop = () => {
+    if (!currentWorkshop || !isCreator) return false;
+
+    // Workshop cannot be edited if it has already started
+    return !hasWorkshopStarted();
+  };
+
+const canJoinMeeting = () => {
+  if (!currentWorkshop || !currentWorkshop.startTime || !currentWorkshop.endTime) return false;
+
+  const now = new Date();
+  const workshopStart = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.startTime
+  );
+  const workshopEnd = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.endTime
+  );
+
+  // Allow joining 15 minutes before start and during the workshop
+  const joinWindow = new Date(workshopStart.getTime() - 15 * 60 * 1000);
+
+  return (
+    enrolled &&
+    currentWorkshop.status === "published" &&
+    now >= joinWindow &&
+    now <= workshopEnd &&
+    currentWorkshop.meetingLink
+  );
+};
+
+// Check if workshop can be published
+const canPublishWorkshop = () => {
+  if (!currentWorkshop || !isCreator) return false;
+
+    // Only draft workshops that haven't started can be published
+    return currentWorkshop.status === "draft" && !hasWorkshopStarted();
+  };
+
+const isWorkshopLive = () => {
+  if (!currentWorkshop || !currentWorkshop.startTime || !currentWorkshop.endTime) return false;
+
+  const now = new Date();
+  const workshopStart = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.startTime
+  );
+  const workshopEnd = createWorkshopDateTime(
+    currentWorkshop.scheduledDate, 
+    currentWorkshop.endTime
+  );
+
+  return (
+    now >= workshopStart &&
+    now <= workshopEnd &&
+    currentWorkshop.status === "published"
+  );
+};
+
+const handleWorkshopUpdate = async (updatedWorkshop: Workshop) => {
+  setIsEditing(false);
+  // Immediately redirect to workshops page after successful update
+  router.push('/workshops');
+};
+
+
+  // Load workshop data
+useEffect(() => {
+  if (workshopId && !currentWorkshop && !isEditing && !loading) {
+    getWorkshopSafely(workshopId);
+  }
+}, [workshopId]);
+
+
+  useEffect(() => {
+    if (activeTab === "enrollments" && isCreator && workshopId) {
+      getWorkshopParticipants(workshopId);
+    }
+  }, [activeTab, isCreator, workshopId, getWorkshopParticipants]);
 
   const handleEnroll = async () => {
     if (!currentWorkshop) return;
-    
+
     const success = await enrollInWorkshop(currentWorkshop.id);
     if (success) {
       // Workshop will be automatically updated through the hook
     }
   };
 
+  const getWorkshopSafely = async (id: string) => {
+  try {
+    await getWorkshop(id);
+  } catch (error) {
+    console.warn("Failed to fetch workshop, but this might be expected during navigation:", error);
+    // Don't throw the error, just log it
+  }
+};
+
   const handleUnenroll = async () => {
     if (!currentWorkshop) return;
-    
+
     const success = await unenrollFromWorkshop(currentWorkshop.id);
     if (success) {
       // Workshop will be automatically updated through the hook
@@ -98,49 +302,30 @@ export default function WorkshopDetailPage() {
 
   const handlePublish = async () => {
     if (!currentWorkshop) return;
-    
+
     const success = await publishWorkshop(currentWorkshop.id);
     if (success) {
       // Workshop status will be updated automatically
     }
   };
 
-  const handleWorkshopUpdate = async (updatedWorkshop: Workshop) => {
-    setIsEditing(false);
-    // Workshop will be updated through the hook
-  };
 
   const getStatusBadgeVariant = (status: WorkshopStatus) => {
     switch (status) {
-      case 'published':
-        return 'default';
-      case 'draft':
-        return 'secondary';
-      case 'cancelled':
-        return 'destructive';
-      case 'completed':
-        return 'outline';
+      case "published":
+        return "default";
+      case "draft":
+        return "secondary";
+      case "cancelled":
+        return "destructive";
+      case "completed":
+        return "outline";
       default:
-        return 'secondary';
+        return "secondary";
     }
   };
 
-  const canJoinMeeting = () => {
-    if (!currentWorkshop) return false;
-    
-    const now = new Date();
-    const workshopStart = new Date(`${currentWorkshop.scheduledDate}T${currentWorkshop.startTime}`);
-    const workshopEnd = new Date(`${currentWorkshop.scheduledDate}T${currentWorkshop.endTime}`);
-    
-    // Allow joining 15 minutes before start and during the workshop
-    const joinWindow = new Date(workshopStart.getTime() - 15 * 60 * 1000);
-    
-    return enrolled && 
-           currentWorkshop.status === 'published' && 
-           now >= joinWindow && 
-           now <= workshopEnd &&
-           currentWorkshop.meetingLink;
-  };
+
 
   if (loading && !currentWorkshop) {
     return (
@@ -165,7 +350,8 @@ export default function WorkshopDetailPage() {
               Workshop Not Found
             </h3>
             <p className="text-slate-500 mb-4">
-              {error || "The workshop you're looking for doesn't exist or has been removed."}
+              {error ||
+                "The workshop you're looking for doesn't exist or has been removed."}
             </p>
             <div className="space-x-2">
               <Button variant="outline" onClick={clearError}>
@@ -205,6 +391,8 @@ export default function WorkshopDetailPage() {
     );
   }
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -225,6 +413,7 @@ export default function WorkshopDetailPage() {
           <div className="flex flex-col lg:flex-row items-start justify-between mb-6">
             <div className="flex-1 mb-6 lg:mb-0">
               <div className="flex items-center space-x-3 mb-4">
+                {isWorkshopLive() && <LiveIndicator />}
                 <Badge
                   variant={getStatusBadgeVariant(currentWorkshop.status)}
                   className="capitalize"
@@ -235,14 +424,14 @@ export default function WorkshopDetailPage() {
                   {currentWorkshop.difficulty}
                 </Badge>
                 <Badge variant="secondary">
-                  {currentWorkshop.category?.replace('_', ' ')}
+                  {currentWorkshop.category?.replace("_", " ")}
                 </Badge>
               </div>
-              
+
               <h1 className="text-4xl font-bold text-slate-900 mb-4">
                 {currentWorkshop.title}
               </h1>
-              
+
               <p className="text-xl text-slate-600 mb-6">
                 {currentWorkshop.shortDescription}
               </p>
@@ -259,19 +448,20 @@ export default function WorkshopDetailPage() {
                 <div className="flex items-center space-x-2 text-slate-600">
                   <Users className="w-5 h-5" />
                   <span>
-                    {currentWorkshop.currentEnrollments}/{currentWorkshop.maxParticipants}
+                    {currentWorkshop.currentEnrollments}/
+                    {currentWorkshop.maxParticipants}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600">
-                  {currentWorkshop.format === 'online' ? (
+                  {currentWorkshop.format === "online" ? (
                     <Globe className="w-5 h-5" />
-                  ) : currentWorkshop.format === 'in_person' ? (
+                  ) : currentWorkshop.format === "in_person" ? (
                     <MapPin className="w-5 h-5" />
                   ) : (
                     <Video className="w-5 h-5" />
                   )}
                   <span className="capitalize">
-                    {currentWorkshop.format?.replace('_', ' ')}
+                    {currentWorkshop.format?.replace("_", " ")}
                   </span>
                 </div>
               </div>
@@ -287,6 +477,7 @@ export default function WorkshopDetailPage() {
                       onClick={() => setIsEditing(true)}
                       variant="outline"
                       className="flex-1"
+                      disabled={!canEditWorkshop()}
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
@@ -295,8 +486,32 @@ export default function WorkshopDetailPage() {
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
-                  
-                  {currentWorkshop.status === 'draft' && (
+
+                  {hasWorkshopStarted() && !hasWorkshopOccurred() && (
+                    <div className="text-center">
+                      <Badge
+                        variant="outline"
+                        className="bg-yellow-50 text-yellow-700"
+                      >
+                        <Clock className="w-3 h-3 mr-1" />
+                        Workshop is currently running - Cannot edit
+                      </Badge>
+                    </div>
+                  )}
+
+                  {hasWorkshopOccurred() && (
+                    <div className="text-center">
+                      <Badge
+                        variant="outline"
+                        className="bg-slate-50 text-slate-600"
+                      >
+                        <Clock className="w-3 h-3 mr-1" />
+                        Workshop has ended - No longer editable
+                      </Badge>
+                    </div>
+                  )}
+
+                  {canPublishWorkshop() && (
                     <Button
                       onClick={handlePublish}
                       disabled={loading}
@@ -306,7 +521,19 @@ export default function WorkshopDetailPage() {
                       Publish Workshop
                     </Button>
                   )}
-                  
+
+                  {currentWorkshop.status === "draft" &&
+                    hasWorkshopStarted() && (
+                      <div className="text-center">
+                        <Badge
+                          variant="outline"
+                          className="bg-slate-50 text-slate-600"
+                        >
+                          Cannot publish - Workshop has already started
+                        </Badge>
+                      </div>
+                    )}
+
                   <div className="text-center">
                     <Badge variant="outline" className="bg-blue-50">
                       <UserCheck className="w-3 h-3 mr-1" />
@@ -366,13 +593,15 @@ export default function WorkshopDetailPage() {
                           Enrolled
                         </Badge>
                       </div>
-                      
-                      {currentWorkshop.status === 'published' && !canJoinMeeting() && (
-                        <p className="text-sm text-slate-600 text-center">
-                          Meeting link will be available 15 minutes before start
-                        </p>
-                      )}
-                      
+
+                      {currentWorkshop.status === "published" &&
+                        !canJoinMeeting() && (
+                          <p className="text-sm text-slate-600 text-center">
+                            Meeting link will be available 15 minutes before
+                            start
+                          </p>
+                        )}
+
                       <Button
                         onClick={handleUnenroll}
                         disabled={enrollmentLoading}
@@ -394,7 +623,7 @@ export default function WorkshopDetailPage() {
                     </div>
                   )}
 
-                  {currentWorkshop.status !== 'published' && (
+                  {currentWorkshop.status !== "published" && (
                     <div className="text-center">
                       <Badge variant="secondary">
                         Workshop not yet published
@@ -449,7 +678,9 @@ export default function WorkshopDetailPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">Description</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    Description
+                  </h3>
                   <div className="prose prose-slate max-w-none">
                     <p className="text-slate-700 whitespace-pre-wrap">
                       {currentWorkshop.description}
@@ -457,25 +688,35 @@ export default function WorkshopDetailPage() {
                   </div>
                 </div>
 
-                {currentWorkshop.learningObjectives && currentWorkshop.learningObjectives.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
-                      What You'll Learn
-                    </h3>
-                    <ul className="space-y-2">
-                      {currentWorkshop.learningObjectives.map((objective, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700">{objective}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {currentWorkshop.learningObjectives &&
+                  currentWorkshop.learningObjectives.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                        What You'll Learn
+                      </h3>
+                      <ul className="space-y-2">
+                        {currentWorkshop.learningObjectives.map(
+                          (objective, index) => (
+                            <li
+                              key={index}
+                              className="flex items-start space-x-2"
+                            >
+                              <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-slate-700">
+                                {objective}
+                              </span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
 
                 {currentWorkshop.tags && currentWorkshop.tags.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Topics</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                      Topics
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       {currentWorkshop.tags.map((tag, index) => (
                         <Badge key={index} variant="outline">
@@ -500,26 +741,36 @@ export default function WorkshopDetailPage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Duration</label>
+                      <label className="text-sm font-medium text-slate-600">
+                        Duration
+                      </label>
                       <p className="text-slate-900">
                         {currentWorkshop.duration} minutes
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Language</label>
+                      <label className="text-sm font-medium text-slate-600">
+                        Language
+                      </label>
                       <p className="text-slate-900">
-                        {currentWorkshop.language || 'English'}
+                        {currentWorkshop.language || "English"}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Price</label>
+                      <label className="text-sm font-medium text-slate-600">
+                        Price
+                      </label>
                       <p className="text-slate-900 flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />
-                        {currentWorkshop.price === 0 ? 'Free' : `$${currentWorkshop.price}`}
+                        {currentWorkshop.price === 0
+                          ? "Free"
+                          : `$${currentWorkshop.price}`}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Certificate</label>
+                      <label className="text-sm font-medium text-slate-600">
+                        Certificate
+                      </label>
                       <p className="text-slate-900 flex items-center">
                         {currentWorkshop.issuesCertificate ? (
                           <>
@@ -538,7 +789,9 @@ export default function WorkshopDetailPage() {
 
                   {currentWorkshop.location && (
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Location</label>
+                      <label className="text-sm font-medium text-slate-600">
+                        Location
+                      </label>
                       <p className="text-slate-900 flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
                         {currentWorkshop.location}
@@ -548,9 +801,12 @@ export default function WorkshopDetailPage() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Enrollment Progress</span>
+                      <span className="text-slate-600">
+                        Enrollment Progress
+                      </span>
                       <span className="text-slate-900">
-                        {currentWorkshop.currentEnrollments}/{currentWorkshop.maxParticipants}
+                        {currentWorkshop.currentEnrollments}/
+                        {currentWorkshop.maxParticipants}
                       </span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-2">
@@ -558,9 +814,11 @@ export default function WorkshopDetailPage() {
                         className="bg-emerald-600 h-2 rounded-full"
                         style={{
                           width: `${Math.min(
-                            (currentWorkshop.currentEnrollments / currentWorkshop.maxParticipants) * 100,
+                            (currentWorkshop.currentEnrollments /
+                              currentWorkshop.maxParticipants) *
+                              100,
                             100
-                          )}%`
+                          )}%`,
                         }}
                       ></div>
                     </div>
@@ -582,7 +840,7 @@ export default function WorkshopDetailPage() {
                         <XCircle className="w-5 h-5 text-slate-400" />
                       )}
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-slate-700">Interactive</span>
                       {currentWorkshop.isInteractive ? (
@@ -591,7 +849,7 @@ export default function WorkshopDetailPage() {
                         <XCircle className="w-5 h-5 text-slate-400" />
                       )}
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-slate-700">Materials Provided</span>
                       {currentWorkshop.materialsProvided ? (
@@ -600,7 +858,7 @@ export default function WorkshopDetailPage() {
                         <XCircle className="w-5 h-5 text-slate-400" />
                       )}
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-slate-700">Waitlist Available</span>
                       {currentWorkshop.allowWaitlist ? (
@@ -622,40 +880,56 @@ export default function WorkshopDetailPage() {
                 <CardTitle>Requirements & Preparation</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {currentWorkshop.prerequisites && currentWorkshop.prerequisites.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Prerequisites</h3>
-                    <ul className="space-y-2">
-                      {currentWorkshop.prerequisites.map((prereq, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-slate-700">{prereq}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {currentWorkshop.prerequisites &&
+                  currentWorkshop.prerequisites.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                        Prerequisites
+                      </h3>
+                      <ul className="space-y-2">
+                        {currentWorkshop.prerequisites.map((prereq, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start space-x-2"
+                          >
+                            <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-slate-700">{prereq}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                 {currentWorkshop.targetAudience && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Target Audience</h3>
-                    <p className="text-slate-700">{currentWorkshop.targetAudience}</p>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                      Target Audience
+                    </h3>
+                    <p className="text-slate-700">
+                      {currentWorkshop.targetAudience}
+                    </p>
                   </div>
                 )}
 
-                {currentWorkshop.requiredTools && currentWorkshop.requiredTools.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Required Tools</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {currentWorkshop.requiredTools.map((tool, index) => (
-                        <div key={index} className="flex items-center space-x-2 p-2 bg-slate-50 rounded">
-                          <Settings className="w-4 h-4 text-slate-600" />
-                          <span className="text-slate-700">{tool}</span>
-                        </div>
-                      ))}
+                {currentWorkshop.requiredTools &&
+                  currentWorkshop.requiredTools.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                        Required Tools
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {currentWorkshop.requiredTools.map((tool, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 p-2 bg-slate-50 rounded"
+                          >
+                            <Settings className="w-4 h-4 text-slate-600" />
+                            <span className="text-slate-700">{tool}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -664,19 +938,12 @@ export default function WorkshopDetailPage() {
           {isCreator && (
             <>
               <TabsContent value="enrollments">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Enrollment Management</CardTitle>
-                    <CardDescription>
-                      Manage participants and track enrollment status
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-600">
-                      Enrollment management features coming soon...
-                    </p>
-                  </CardContent>
-                </Card>
+                <WorkshopEnrollmentTab
+                  workshopId={workshopId}
+                  participants={participants}
+                  loading={participantsLoading}
+                  onRefresh={() => getWorkshopParticipants(workshopId)}
+                />
               </TabsContent>
 
               <TabsContent value="analytics">

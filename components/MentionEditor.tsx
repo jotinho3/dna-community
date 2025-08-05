@@ -80,7 +80,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
             <User size={16} />
-            Mencionar usuários
+            Mention Users
           </label>
           
           {/* Search input */}
@@ -92,7 +92,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Buscar usuários para mencionar..."
+                placeholder="Search users to mention..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -102,7 +102,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
                 {isLoading ? (
                   <div className="p-3 text-center text-gray-500">
-                    Carregando usuários...
+                    Loading users...
                   </div>
                 ) : filteredUsers.length > 0 ? (
                   <div className="p-2">
@@ -138,7 +138,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
                   </div>
                 ) : (
                   <div className="p-3 text-center text-gray-500">
-                    {searchTerm ? 'Nenhum usuário encontrado' : 'Digite para buscar usuários'}
+                    {searchTerm ? 'No users found' : 'Type to search users'}
                   </div>
                 )}
               </div>
@@ -158,7 +158,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
         {mentions.length > 0 && (
           <div className="mt-4">
             <div className="text-sm font-medium text-gray-700 mb-2">
-              Usuários mencionados ({mentions.length}):
+              Mentioned Users ({mentions.length}):
             </div>
             <div className="flex flex-wrap gap-2">
               {mentions.map((mention) => (
@@ -171,7 +171,7 @@ const MentionEditor: React.FC<MentionEditorProps> = ({
                     onClick={() => handleRemoveMention(mention.userId)}
                     className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
                     type="button"
-                    aria-label={`Remover menção de ${mention.userName}`}
+                    aria-label={`Remove mention of ${mention.userName}`}
                   >
                     <X size={14} />
                   </button>

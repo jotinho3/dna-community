@@ -33,12 +33,12 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
     setSuccess(null);
 
     if (!user) {
-      setError("Você precisa estar logado para responder.");
+      setError("You must be logged in to answer.");
       return;
     }
 
     if (!content.trim()) {
-      setError("A resposta não pode estar vazia.");
+      setError("The answer cannot be empty.");
       return;
     }
 
@@ -60,10 +60,10 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erro ao enviar resposta.");
+        throw new Error(data.error || "Error sending answer.");
       }
 
-      setSuccess("Resposta enviada com sucesso!");
+      setSuccess("Answer sent successfully!");
       setContent("");
       setMentions([]);
       
@@ -73,7 +73,7 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
       }, 1500);
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao enviar resposta.");
+      setError(err instanceof Error ? err.message : "Error sending answer.");
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
         userId={user?.uid}
         onChange={(text) => setContent(text)}
         onMentionsChange={(mentionsList) => setMentions(mentionsList)}
-        placeholder="Escreva sua resposta detalhadamente. Seja claro e helpful!"
+        placeholder="Write your answer here..."
         className="min-h-[200px]"
       />
 
@@ -127,12 +127,12 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Enviando...
+              Sending...
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" />
-              Responder
+              Send Answer
             </>
           )}
         </Button>
