@@ -20,8 +20,9 @@ import {
   CheckCheck,
   Trash2,
   Settings,
+  Loader2,
 } from "lucide-react"
-import { useAuth } from "../context/AuthContext" // <-- use correct AuthContext import
+import { useAuth } from "../context/AuthContext"
 import Link from "next/link"
 
 interface Notification {
@@ -36,95 +37,163 @@ interface Notification {
   timestamp: string
   isRead: boolean
   actionUrl?: string
+  createdAt: string
+  // Add these fields from your backend structure
+  targetId: string
+  targetType: 'question' | 'answer' | 'workshop' | 'certificate'
+  answerId?: string
+  workshopId?: string
+  meetingLink?: string
+  subType?: string
 }
 
 export default function NotificationsPage() {
-  const { user } = useAuth() // <-- use correct useAuth
+  const { user } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [filter, setFilter] = useState<"all" | "unread">("all")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch notifications from API
+  const fetchNotifications = async () => {
+    if (!user?.uid) return
+
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/notifications/${user.uid}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications')
+      }
+
+      const data = await response.json()
+      
+      // Transform API data to match our interface
+      const transformedNotifications = data.notifications?.map((notif: any) => ({
+        id: notif.id,
+        type: notif.type || 'answer',
+        title: notif.title || getDefaultTitle(notif.type),
+        message: notif.message || notif.content,
+        user: notif.fromUserId && notif.fromUserName ? {
+          name: notif.fromUserName,
+          avatar: notif.fromUserAvatar || notif.fromUserName?.[0]?.toUpperCase() || 'U'
+        } : undefined,
+        timestamp: formatTimestamp(notif.createdAt),
+        isRead: notif.read || false,
+        actionUrl: notif.actionUrl,
+        createdAt: notif.createdAt,
+        // Include backend structure fields
+        targetId: notif.targetId,
+        targetType: notif.targetType,
+        answerId: notif.answerId,
+        workshopId: notif.workshopId,
+        meetingLink: notif.meetingLink,
+        subType: notif.subType
+      })) || []
+
+      setNotifications(transformedNotifications)
+    } catch (err) {
+      console.error('Error fetching notifications:', err)
+      setError('Failed to load notifications')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Helper function to get default titles based on type
+  const getDefaultTitle = (type: string) => {
+    switch (type) {
+      case 'answer': return 'New answer to your question'
+      case 'comment': return 'New comment on your post'
+      case 'upvote': return 'Your content was upvoted'
+      case 'follow': return 'New follower'
+      case 'badge': return 'Badge earned!'
+      case 'workshop': return 'Workshop notification'
+      case 'mention': return 'You were mentioned'
+      default: return 'New notification'
+    }
+  }
+
+  // Helper function to format timestamps
+  const formatTimestamp = (timestamp: string) => {
+    const now = new Date()
+    const notifTime = new Date(timestamp)
+    const diffMs = now.getTime() - notifTime.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins} minutes ago`
+    if (diffHours < 24) return `${diffHours} hours ago`
+    if (diffDays < 7) return `${diffDays} days ago`
+    return notifTime.toLocaleDateString()
+  }
+
+  // Navigation logic from NotificationContext
+const navigateToNotification = (notification: Notification) => {
+  // Mark as read first
+  if (!notification.isRead) {
+    markAsRead(notification.id)
+  }
+
+  // Handle workshop notifications
+  if (notification.type === 'workshop') {
+    if (notification.subType === 'workshop_starting_now' && notification.meetingLink) {
+      window.open(notification.meetingLink, '_blank')
+      return
+    } else if (notification.actionUrl) {
+      window.location.href = notification.actionUrl
+      return
+    } else if (notification.workshopId) {
+      window.location.href = `/workshops/${notification.workshopId}`
+      return
+    }
+  }
+
+  // Handle mention notifications specifically
+  if (notification.type === 'mention') {
+    // If it's a mention in an answer, navigate to the specific answer
+    if (notification.targetType === 'answer' && notification.targetId && notification.answerId) {
+      window.location.href = `/questions/${notification.targetId}#answer-${notification.answerId}`
+      return
+    }
+    // If it's a mention in a question, navigate to the question
+    if (notification.targetType === 'question' && notification.targetId) {
+      window.location.href = `/questions/${notification.targetId}`
+      return
+    }
+  }
+
+  // Navigate based on target type
+  if (notification.targetType === 'question') {
+    window.location.href = `/questions/${notification.targetId}`
+  } else if (notification.targetType === 'answer' && notification.targetId && notification.answerId) {
+    window.location.href = `/questions/${notification.targetId}#answer-${notification.answerId}`
+  } else if (notification.targetType === 'workshop' && notification.workshopId) {
+    window.location.href = `/workshops/${notification.workshopId}`
+  } else if (notification.targetType === 'certificate' && notification.actionUrl) {
+    window.location.href = notification.actionUrl
+  } else if (notification.actionUrl) {
+    window.location.href = notification.actionUrl
+  }
+}
 
   useEffect(() => {
-    // Mock notifications data
-    const mockNotifications: Notification[] = [
-      {
-        id: "1",
-        type: "answer",
-        title: "New answer to your question",
-        message: "Sarah Chen answered your question about handling missing data in time series analysis.",
-        user: { name: "Sarah Chen", avatar: "SC" },
-        timestamp: "2 hours ago",
-        isRead: false,
-        actionUrl: "/questions/123",
-      },
-      {
-        id: "2",
-        type: "upvote",
-        title: "Your answer was upvoted",
-        message: "Your answer about SQL optimization received 5 upvotes.",
-        timestamp: "4 hours ago",
-        isRead: false,
-        actionUrl: "/questions/456",
-      },
-      {
-        id: "3",
-        type: "comment",
-        title: "New comment on your answer",
-        message: "Mike Rodriguez commented on your machine learning pipeline answer.",
-        user: { name: "Mike Rodriguez", avatar: "MR" },
-        timestamp: "6 hours ago",
-        isRead: true,
-        actionUrl: "/questions/789",
-      },
-      {
-        id: "4",
-        type: "follow",
-        title: "New follower",
-        message: "Alex Kumar started following you.",
-        user: { name: "Alex Kumar", avatar: "AK" },
-        timestamp: "1 day ago",
-        isRead: true,
-        actionUrl: "/profile/alex-kumar",
-      },
-      {
-        id: "5",
-        type: "badge",
-        title: "Badge earned!",
-        message: "You earned the 'Python Guru' badge for your contributions.",
-        timestamp: "2 days ago",
-        isRead: true,
-      },
-      {
-        id: "6",
-        type: "workshop",
-        title: "Workshop reminder",
-        message: "Your enrolled workshop 'Machine Learning Bootcamp' starts tomorrow.",
-        timestamp: "2 days ago",
-        isRead: false,
-        actionUrl: "/workshops/1",
-      },
-      {
-        id: "7",
-        type: "mention",
-        title: "You were mentioned",
-        message: "Emily Zhang mentioned you in a discussion about deep learning frameworks.",
-        user: { name: "Emily Zhang", avatar: "EZ" },
-        timestamp: "3 days ago",
-        isRead: true,
-        actionUrl: "/questions/101",
-      },
-      {
-        id: "8",
-        type: "upvote",
-        title: "Question upvoted",
-        message: "Your question about feature engineering received 10 upvotes.",
-        timestamp: "4 days ago",
-        isRead: true,
-        actionUrl: "/questions/202",
-      },
-    ]
-
-    setNotifications(mockNotifications)
-  }, [])
+    if (user?.uid) {
+      fetchNotifications()
+    }
+  }, [user?.uid])
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -146,16 +215,69 @@ export default function NotificationsPage() {
     }
   }
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif)))
+  const markAsRead = async (id: string) => {
+    if (!user?.uid) return
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/notifications/${id}/read`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (response.ok) {
+        setNotifications((prev) => 
+          prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
+        )
+      }
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error)
+    }
   }
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })))
+  const markAllAsRead = async () => {
+    if (!user?.uid) return
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/notifications/${user.uid}/mark-all-read`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (response.ok) {
+        setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })))
+      }
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error)
+    }
   }
 
-  const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id))
+  const deleteNotification = async (id: string) => {
+    if (!user?.uid) return
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/notifications/${user.uid}/${id}`,
+        {
+          method: 'DELETE',
+        }
+      )
+
+      if (response.ok) {
+        setNotifications((prev) => prev.filter((notif) => notif.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete notification:', error)
+    }
   }
 
   const filteredNotifications = notifications.filter(
@@ -164,22 +286,7 @@ export default function NotificationsPage() {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <Bell className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Sign in to view notifications</h2>
-            <p className="text-slate-600 mb-4">Get notified about answers, comments, and community activity.</p>
-            <Button asChild>
-              <Link href="/signin">Sign In</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  // ... Keep all the existing JSX for loading, error, and no user states ...
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
@@ -196,7 +303,12 @@ export default function NotificationsPage() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={markAllAsRead} 
+                disabled={unreadCount === 0}
+              >
                 <CheckCheck className="w-4 h-4 mr-2" />
                 Mark all read
               </Button>
@@ -233,9 +345,10 @@ export default function NotificationsPage() {
                   {filteredNotifications.map((notification) => (
                     <Card
                       key={notification.id}
-                      className={`transition-all hover:shadow-md ${
+                      className={`transition-all hover:shadow-md cursor-pointer ${
                         !notification.isRead ? "border-l-4 border-l-emerald-500 bg-emerald-50/30" : "hover:bg-slate-50"
                       }`}
+                      onClick={() => navigateToNotification(notification)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start space-x-4">
@@ -268,20 +381,26 @@ export default function NotificationsPage() {
                               </div>
 
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                   <Button variant="ghost" size="sm">
                                     <MoreVertical className="w-4 h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   {!notification.isRead && (
-                                    <DropdownMenuItem onClick={() => markAsRead(notification.id)}>
+                                    <DropdownMenuItem onClick={(e) => {
+                                      e.stopPropagation()
+                                      markAsRead(notification.id)
+                                    }}>
                                       <Check className="w-4 h-4 mr-2" />
                                       Mark as read
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuItem
-                                    onClick={() => deleteNotification(notification.id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      deleteNotification(notification.id)
+                                    }}
                                     className="text-red-600"
                                   >
                                     <Trash2 className="w-4 h-4 mr-2" />
@@ -290,14 +409,6 @@ export default function NotificationsPage() {
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
-
-                            {notification.actionUrl && (
-                              <div className="mt-3">
-                                <Button variant="outline" size="sm" asChild onClick={() => markAsRead(notification.id)}>
-                                  <Link href={notification.actionUrl}>View Details</Link>
-                                </Button>
-                              </div>
-                            )}
                           </div>
                         </div>
                       </CardContent>
@@ -305,8 +416,7 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               )}
-
-               </TabsContent>
+            </TabsContent>
           </Tabs>
         </div>
       </div>

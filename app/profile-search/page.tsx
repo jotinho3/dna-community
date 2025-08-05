@@ -75,6 +75,7 @@ const ROLE_OPTIONS = [
 export default function UsersDiscoveryPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
   const [users, setUsers] = useState<DiscoveryUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,32 +87,36 @@ export default function UsersDiscoveryPage() {
   const [hasMore, setHasMore] = useState(true);
   const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    fetchUsers(true);
-  }, [roleFilter, locationFilter, skillsFilter]);
+useEffect(() => {
+  fetchUsers(true);
+}, [roleFilter, locationFilter, skillsFilter, user?.uid]);
 
-  const fetchUsers = async (reset = false) => {
+   const fetchUsers = async (reset = false) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: reset ? "1" : page.toString(),
         limit: "20",
-        ...(user?.uid && { currentUserId: user.uid }),
         ...(roleFilter && { role: roleFilter }),
         ...(locationFilter && { location: locationFilter }),
         ...(skillsFilter && { skills: skillsFilter }),
       });
-
+  
+      // Add currentUserId only if user exists and has uid
+      if (user?.uid) {
+        params.append('currentUserId', user.uid);
+      }
+  
       const response = await fetch(
-        `https://dna-community-back.onrender.com/api/users/profiles?${params}`
+        `${apiUrl}/api/users/profiles?${params}`
       );
-
+  
       if (!response.ok) {
         throw new Error("Erro ao carregar usuários");
       }
-
+  
       const data = await response.json();
-
+  
       if (reset) {
         setUsers(data.users);
         setPage(2);
@@ -119,7 +124,7 @@ export default function UsersDiscoveryPage() {
         setUsers((prev) => [...prev, ...data.users]);
         setPage((prev) => prev + 1);
       }
-
+  
       setHasMore(data.users.length === 20);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -149,9 +154,9 @@ export default function UsersDiscoveryPage() {
     const newFollowingState = new Set(followingUsers);
 
     try {
-      const endpoint = isCurrentlyFollowing
-        ? "https://dna-community-back.onrender.com/api/users/unfollow"
-        : "https://dna-community-back.onrender.com/api/users/follow";
+           const endpoint = isCurrentlyFollowing
+        ? `${apiUrl}/api/users/unfollow`
+        : `${apiUrl}/api/users/follow`;
 
       const response = await fetch(endpoint, {
         method: "POST",

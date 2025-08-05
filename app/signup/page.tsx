@@ -27,12 +27,23 @@ export default function SignUpPage() {
 
   const { register } = useAuth()
 
+  // Function to validate email domain
+  const isValidEmailDomain = (email: string) => {
+    return email.toLowerCase().endsWith('@infosys.com')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields")
+      return
+    }
+
+    // Check email domain restriction
+    if (!isValidEmailDomain(email)) {
+      setError("Registration is restricted to @infosys.com email addresses only")
       return
     }
 
@@ -71,10 +82,16 @@ export default function SignUpPage() {
             <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-800">DataHub</span>
+            <span className="text-xl font-bold text-slate-800">DNA Community</span>
           </div>
-          <CardTitle className="text-2xl">Join DataHub</CardTitle>
-          <CardDescription>Create your account to start contributing</CardDescription>
+          <CardTitle className="text-2xl">Join DNA Community</CardTitle>
+          <CardDescription>
+            Create your account to start contributing
+            <br />
+            <span className="text-xs text-slate-500 mt-1">
+              Restricted to @infosys.com email addresses
+            </span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,11 +118,21 @@ export default function SignUpPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your @infosys.com email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
+                className={
+                  email && !isValidEmailDomain(email) 
+                    ? "border-red-300 focus:border-red-500" 
+                    : ""
+                }
               />
+              {email && !isValidEmailDomain(email) && (
+                <p className="text-xs text-red-600">
+                  Please use your @infosys.com email address
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -167,7 +194,11 @@ export default function SignUpPage() {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
+                       <Button 
+              type="submit" 
+              className="w-full bg-emerald-600 hover:bg-emerald-700" 
+              disabled={isLoading || (email !== "" && !isValidEmailDomain(email))}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -188,7 +219,7 @@ export default function SignUpPage() {
             </p>
           </div>
         </CardContent>
-           </Card>
+      </Card>
     </div>
   )
 }

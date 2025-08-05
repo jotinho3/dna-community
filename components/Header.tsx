@@ -1,11 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Search,
   TrendingUp,
   MessageSquare,
   BookOpen,
@@ -14,6 +12,7 @@ import {
   Settings,
   LogOut,
   Bell,
+  Users,
 } from "lucide-react";
 import { useAuth } from "../app/context/AuthContext";
 import Link from "next/link";
@@ -42,21 +41,10 @@ export default function Header() {
             <span className="text-xl font-bold text-slate-800">DataHub</span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-2xl mx-8 hidden md:block">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <Input
-                placeholder="Search questions, topics, or users..."
-                className="pl-10 bg-slate-50 border-slate-200 focus:bg-white"
-              />
-            </div>
-          </div>
-
           {/* Navigation */}
           <nav className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-              <Link href="/ask">
+              <Link href="/questions">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Ask Question
               </Link>
@@ -74,6 +62,12 @@ export default function Header() {
                   <Link href="/news">
                     <TrendingUp className="w-4 h-4 mr-2" />
                     News
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+                  <Link href="/profile-search">
+                    <Users className="w-4 h-4 mr-2" />
+                    Profiles
                   </Link>
                 </Button>
 
@@ -121,6 +115,12 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link href="/profile-search">
+                        <Users className="mr-2 h-4 w-4" />
+                        Browse Profiles
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/notifications">
                         <Bell className="mr-2 h-4 w-4" />
                         Notifications
@@ -152,6 +152,12 @@ export default function Header() {
                   <Link href="/news">
                     <TrendingUp className="w-4 h-4 mr-2" />
                     News
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+                  <Link href="/profile-search">
+                    <Users className="w-4 h-4 mr-2" />
+                    Profiles
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>

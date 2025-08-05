@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,10 +20,16 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-export default function NewsArticlePage({ params }: { params: { id: string } }) {
+export default function NewsArticlePage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  // Use React.use() to unwrap the Promise
+  const { id } = React.use(params);
   // Mock article data - in real app, fetch based on params.id
   const article = {
-    id: params.id,
+    id: id,
     title: "OpenAI Releases GPT-5: Revolutionary Breakthrough in AI Reasoning",
     summary:
       "The latest language model shows unprecedented capabilities in mathematical reasoning and code generation, setting new benchmarks across multiple domains.",

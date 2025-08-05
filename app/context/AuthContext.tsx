@@ -40,6 +40,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   token: string | null
+  isLoading: boolean // Added loading state
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
@@ -50,35 +51,49 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true) // Added loading state
 
   // Get API URL from environment or use default
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
   useEffect(() => {
-    const storedToken = sessionStorage.getItem("token")
-    const storedUser = sessionStorage.getItem("user")
-    const expires = sessionStorage.getItem("tokenExpires")
+    const loadAuthState = () => {
+      try {
+        const storedToken = sessionStorage.getItem("token")
+        const storedUser = sessionStorage.getItem("user")
+        const expires = sessionStorage.getItem("tokenExpires")
 
-    if (storedToken && storedUser && expires && Date.now() < Number(expires)) {
-      setToken(storedToken)
-      const parsedUser = JSON.parse(storedUser)
-      
-      // Ensure profile exists with default values
-      if (!parsedUser.profile) {
-        parsedUser.profile = {
-          role: 'user', // Default role
-          experience: '',
-          title: '',
-          interests: [],
-          languages: [],
-          tools: []
+        if (storedToken && storedUser && expires && Date.now() < Number(expires)) {
+          setToken(storedToken)
+          const parsedUser = JSON.parse(storedUser)
+          
+          // Ensure profile exists with default values
+          if (!parsedUser.profile) {
+            parsedUser.profile = {
+              role: 'user', // Default role
+              experience: '',
+              title: '',
+              interests: [],
+              languages: [],
+              tools: []
+            }
+          }
+          
+          setUser(parsedUser)
+        } else {
+          // Clear expired or invalid session
+          sessionStorage.clear()
         }
+      } catch (error) {
+        console.error('Error loading auth state:', error)
+        sessionStorage.clear()
+      } finally {
+        // Always set loading to false when done
+        setIsLoading(false)
       }
-      
-      setUser(parsedUser)
-    } else {
-      sessionStorage.clear()
     }
+
+    loadAuthState()
   }, [])
 
   const saveSession = (token: string, user: User, expiresIn: string) => {
@@ -102,36 +117,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    })
-    if (!res.ok) throw new Error("Registration failed")
-    const data = await res.json()
-    saveSession(data.token, data.user, data.expiresIn)
+    setIsLoading(true) // Set loading during registration
+    try {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      })
+      if (!res.ok) throw new Error("Registration failed")
+      const data = await res.json()
+      saveSession(data.token, data.user, data.expiresIn)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-    if (!res.ok) throw new Error("Login failed")
-    const data = await res.json()
-    console.log(data)
-    saveSession(data.token, data.user, data.expiresIn)
+    setIsLoading(true) // Set loading during login
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+      if (!res.ok) throw new Error("Login failed")
+      const data = await res.json()
+      console.log(data)
+      saveSession(data.token, data.user, data.expiresIn)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const logout = () => {
     setToken(null)
     setUser(null)
+    setIsLoading(false) // Ensure loading is false after logout
     sessionStorage.clear()
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      isLoading, // Provide loading state
+      login, 
+      register, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   )

@@ -80,6 +80,7 @@ export default function ProfilePage({
   const { user } = useAuth();
   const { toast } = useToast();
   const { uid } = React.use(params);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +98,7 @@ export default function ProfilePage({
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(
-        `https://dna-community-back.onrender.com/api/users/${uid}/profile?currentUserId=${user?.uid}`
+         `${apiUrl}/api/users/${uid}/profile?currentUserId=${user?.uid || ''}`
       );
 
       if (!response.ok) {
@@ -120,7 +121,8 @@ export default function ProfilePage({
 
   const fetchFollowers = async () => {
     try {
-      const response = await fetch(`/api/users/${uid}/followers`);
+      // Replace hardcoded URL with adaptive URL
+      const response = await fetch(`${apiUrl}/api/users/${uid}/followers`);
       const data = await response.json();
       setFollowers(data.followers || []);
     } catch (error) {
@@ -128,9 +130,11 @@ export default function ProfilePage({
     }
   };
 
-  const fetchFollowing = async () => {
+
+ const fetchFollowing = async () => {
     try {
-      const response = await fetch(`/api/users/${uid}/following`);
+      // Replace hardcoded URL with adaptive URL
+      const response = await fetch(`${apiUrl}/api/users/${uid}/following`);
       const data = await response.json();
       setFollowing(data.following || []);
     } catch (error) {
@@ -138,7 +142,7 @@ export default function ProfilePage({
     }
   };
 
-  const handleFollow = async () => {
+ const handleFollow = async () => {
     if (!user) {
       toast({
         title: "Login necessário",
@@ -150,9 +154,10 @@ export default function ProfilePage({
 
     setFollowLoading(true);
     try {
+      // Replace hardcoded URLs with adaptive URLs
       const endpoint = profileUser?.isFollowing
-        ? "/api/users/unfollow"
-        : "/api/users/follow";
+        ? `${apiUrl}/api/users/unfollow`
+        : `${apiUrl}/api/users/follow`;
 
       const response = await fetch(endpoint, {
         method: "POST",

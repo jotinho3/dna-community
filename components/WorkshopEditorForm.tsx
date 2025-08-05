@@ -133,31 +133,33 @@ const WorkshopEditForm: React.FC<WorkshopEditFormProps> = ({
     }
   };
 
+  // Replace the handleSubmit function (around lines 134-200):
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-
+  
     // Validate required fields
     if (!formData.title.trim()) {
       alert('Please enter a workshop title');
       return;
     }
-
+  
     if (!formData.description.trim()) {
       alert('Please enter a workshop description');
       return;
     }
-
+  
     if (learningObjectivesText.trim().length === 0) {
       alert('Please enter at least one learning objective');
       return;
     }
-
+  
     if (!formData.scheduledDate) {
       alert('Please select a workshop date');
       return;
     }
-
+  
     // Validate date is in the future (only for draft workshops)
     if (workshop.status === 'draft') {
       const workshopDate = new Date(`${formData.scheduledDate}T${formData.startTime}`);
@@ -166,7 +168,7 @@ const WorkshopEditForm: React.FC<WorkshopEditFormProps> = ({
         return;
       }
     }
-
+  
     // Process text inputs into arrays
     const processedData: Partial<Workshop> = {
       ...formData,
@@ -192,31 +194,41 @@ const WorkshopEditForm: React.FC<WorkshopEditFormProps> = ({
         .filter(tag => tag.length > 0),
       duration: calculateDuration(), // Include calculated duration
     };
-
+  
     // Only include fields that have actually changed
     const changedFields = Object.keys(processedData).filter(key => {
       const typedKey = key as keyof Workshop;
       return JSON.stringify(processedData[typedKey]) !== JSON.stringify(workshop[typedKey]);
     });
-
+  
     if (changedFields.length === 0) {
       alert('No changes detected');
       return;
     }
-
+  
     const updates = changedFields.reduce((acc, key) => {
       const typedKey = key as keyof Workshop;
       (acc as any)[typedKey] = (processedData as any)[typedKey];
       return acc;
     }, {} as Partial<Workshop>);
-
+  
     try {
+      console.log("Updating workshop..."); // Debug log
       const updatedWorkshop = await updateWorkshop(workshop.id, updates, changes);
-      if (updatedWorkshop) {
-        onWorkshopUpdated?.(updatedWorkshop);
+      console.log("Workshop updated successfully:", updatedWorkshop); // Debug log
+      
+      // Show success message
+      alert('Workshop updated successfully!');
+      
+      // Call the callback immediately without conditions
+      if (onWorkshopUpdated) {
+        console.log("Calling onWorkshopUpdated callback"); // Debug log
+        onWorkshopUpdated(workshop); // Pass the original workshop, not the updated one
       }
+      
     } catch (err) {
       console.error('Failed to update workshop:', err);
+      alert('Failed to update workshop. Please try again.');
     }
   };
 

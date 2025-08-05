@@ -29,6 +29,10 @@ import {
 import { useNotifications } from "../app/context/NotificationContext";
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+// Remove the local Notification interface and NotificationType
+// Import or use the types from your NotificationContext instead
 
 const NotificationBell: React.FC = () => {
   const {
@@ -41,13 +45,16 @@ const NotificationBell: React.FC = () => {
   } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
+  // Update the function signature to accept the notification type from context
   const getNotificationIcon = (notification: any) => {
     const iconProps = { className: "w-4 h-4" };
 
-    if (notification.type === 'workshop') {
-      switch (notification.subType) {
-        case 'workshop_enrollment_confirmation':
+    // Handle workshop notifications by type
+    if (notification.targetType === 'workshop') {
+      switch (notification.type) {
+        case 'workshop_enrollment':
           return <CheckCircle {...iconProps} className="w-4 h-4 text-green-500" />;
         case 'workshop_reminder_24h':
         case 'workshop_reminder_1h':
@@ -70,7 +77,7 @@ const NotificationBell: React.FC = () => {
       }
     }
 
-    // Existing notification icons
+    // Handle other notification types
     switch (notification.type) {
       case 'mention':
         return <MessageSquare {...iconProps} className="w-4 h-4 text-blue-500" />;
@@ -85,14 +92,20 @@ const NotificationBell: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (notification: any) => {
-    if (notification.type === 'workshop') {
-      switch (notification.priority) {
-        case 'urgent':
+  const getPriorityColor = (notification: any): string => {
+    if (notification.targetType === 'workshop') {
+      switch (notification.type) {
+        case 'workshop_starting_now':
+        case 'workshop_reminder_1h':
           return 'border-l-red-500 bg-red-50';
-        case 'high':
+        case 'workshop_reminder_24h':
+        case 'workshop_cancelled':
+        case 'waitlist_promoted':
           return 'border-l-orange-500 bg-orange-50';
-        case 'medium':
+        case 'workshop_enrollment':
+        case 'workshop_updated':
+        case 'workshop_completed':
+        case 'certificate_issued':
           return 'border-l-blue-500 bg-blue-50';
         default:
           return 'border-l-gray-300 bg-gray-50';
@@ -101,8 +114,61 @@ const NotificationBell: React.FC = () => {
     return 'border-l-gray-300 bg-gray-50';
   };
 
-  const handleNotificationClick = (notification: any) => {
-    navigateToNotification(notification);
+  const getActionLabel = (notification: any): string | null => {
+    if (notification.targetType === 'workshop') {
+      switch (notification.type) {
+        case 'workshop_starting_now':
+          return 'Join Now';
+        case 'workshop_enrollment':
+          return 'View Workshop';
+        case 'certificate_issued':
+          return 'Download Certificate';
+        case 'workshop_completed':
+          return 'View Certificate';
+        default:
+          return null;
+      }
+    }
+    return null;
+  };
+
+  const handleNotificationClick = (notification: any): void => {
+    // Handle workshop notifications
+    if (notification.targetType === 'workshop') {
+      const workshopId = notification.targetId || notification.metadata?.workshopId;
+      
+      switch (notification.type) {
+        case 'workshop_starting_now':
+          // Redirect to meeting link if available
+          if (notification.metadata?.meetingLink) {
+            window.open(notification.metadata.meetingLink, '_blank');
+          } else {
+            router.push(`/workshops/${workshopId}`);
+          }
+          break;
+        case 'workshop_enrollment':
+        case 'workshop_updated':
+        case 'workshop_reminder_24h':
+        case 'workshop_reminder_1h':
+          router.push(`/workshops/${workshopId}`);
+          break;
+        case 'certificate_issued':
+        case 'workshop_completed':
+          router.push(`/profile/certificates`);
+          break;
+        default:
+          router.push(`/workshops/${workshopId}`);
+      }
+    } else {
+      // Use existing navigation for other notification types
+      navigateToNotification(notification);
+    }
+    
+    // Mark as read if not already read
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+    
     setIsOpen(false);
   };
 
@@ -150,7 +216,7 @@ const NotificationBell: React.FC = () => {
           </div>
         ) : (
           <div className="max-h-96 overflow-y-auto">
-            {recentNotifications.map((notification) => (
+            {recentNotifications.map((notification: any) => (
               <DropdownMenuItem
                 key={notification.id}
                 className={`p-0 focus:bg-transparent ${!notification.read ? 'bg-blue-50' : ''}`}
@@ -184,16 +250,16 @@ const NotificationBell: React.FC = () => {
                       </p>
 
                       {/* Workshop-specific action button */}
-                      {notification.type === 'workshop' && notification.actionLabel && (
+                      {notification.targetType === 'workshop' && getActionLabel(notification) && (
                         <div className="mt-2">
                           <span className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${
-                            notification.subType === 'workshop_starting_now'
+                            notification.type === 'workshop_starting_now'
                               ? 'bg-red-100 text-red-800'
-                              : notification.subType === 'certificate_issued' || notification.subType === 'workshop_completed'
+                              : ['certificate_issued', 'workshop_completed'].includes(notification.type)
                               ? 'bg-blue-100 text-blue-800'
                               : 'bg-green-100 text-green-800'
                           }`}>
-                            {notification.actionLabel}
+                            {getActionLabel(notification)}
                           </span>
                         </div>
                       )}
