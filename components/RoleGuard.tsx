@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { UserRole } from '../api/roleApiLayer';
-import { useRoles } from '../app/context/RoleContext';
+import { useRoles } from '../context/RoleContext';
 
 interface RoleGuardProps {
   children: ReactNode;

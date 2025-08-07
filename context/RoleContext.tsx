@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { UserRole, UserRoles, RolePermissions, roleService } from '../../api/roleApiLayer';
+import { UserRole, UserRoles, RolePermissions, roleService } from '../api/roleApiLayer';
 
 interface RoleContextType {
   userRoles: UserRole[];

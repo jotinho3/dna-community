@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import Link from "next/link";
 import { AnswerForm } from "@/components/AnswerForm";
 import { Reactions } from "@/components/Reactions";

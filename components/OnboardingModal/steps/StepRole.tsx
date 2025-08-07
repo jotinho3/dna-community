@@ -31,7 +31,7 @@ export function StepRole({ value, onChange, onNext, onBack }: StepRoleProps) {
       id: 'data_analyst', 
       label: 'Data Analyst',
       icon: BarChart3,
-      description: 'Analyze and visualize data'
+      description: 'Analyze, visualize and report data'
     },
     { 
       id: 'data_engineer', 

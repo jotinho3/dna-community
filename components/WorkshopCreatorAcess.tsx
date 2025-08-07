@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRoles } from '../app/context/RoleContext';
+import { useRoles } from '../context/RoleContext';
 import roleService from '../api/roleApiLayer';
 
 interface WorkshopCreatorAccessProps {

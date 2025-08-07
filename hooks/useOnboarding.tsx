@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../app/context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 
 interface OnboardingStep {
   id: number

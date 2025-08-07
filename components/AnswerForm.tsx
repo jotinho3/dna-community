@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import MentionEditor from "./MentionEditor";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "../app/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { RewardCard } from "@/components/RewardCard";
 import { RewardFilters } from "@/components/RewardsFilter";
 import { RewardHistory } from "@/components/RewardHistory";

@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { useAuth } from '../app/context/AuthContext';
-import { useNotifications } from '../app/context/NotificationContext';
+import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import workshopService from '../api/workshopApiLayer';
 
 interface EnrollButtonProps {

@@ -24,7 +24,7 @@ import {
   Loader2,
   Star,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 

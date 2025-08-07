@@ -26,7 +26,7 @@ import {
   Award,
   Clock,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useWorkshop } from "../../hooks/useWorkshops";
 import { WorkshopFilters, WorkshopCategory } from "../../types/workshop";
 import WorkshopList from "../../components/WorkshopList";

@@ -2,8 +2,8 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "./context/AuthContext";
-import { NotificationProvider } from "./context/NotificationContext";
+import { AuthProvider } from "../context/AuthContext";
+import { NotificationProvider } from "../context/NotificationContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useAuth } from "../app/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 interface ReactionsProps {
   targetId: string;
