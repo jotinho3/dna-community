@@ -27,8 +27,16 @@ import {
   Linkedin,
   Twitter,
   ExternalLink,
+  Gift,
+  Package,
+  Monitor,
+  CheckCircle,
+  Clock,
+  XCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -64,6 +72,43 @@ interface ProfileUser {
   isFollowing: boolean;
 }
 
+interface RewardClaim {
+  id: string;
+  userId: string;
+  rewardId: string;
+  rewardTitle: string;
+  tokensClaimed: number;
+  levelWhenClaimed: number;
+  xpWhenClaimed: number;
+  claimedAt: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  deliveryInfo: any;
+  rewardDetails: {
+    id: string;
+    title: string;
+    description: string;
+    type: 'digital' | 'physical' | 'experience' | 'discount';
+    category: string;
+    imageUrl?: string;
+    details: {
+      instructions?: string;
+      validUntil?: string;
+    };
+  };
+}
+
+interface RewardHistoryResponse {
+  claims: RewardClaim[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
 const toDate = (timestamp: any) => {
   if (!timestamp) return null;
   if (timestamp instanceof Date) return timestamp;
@@ -87,6 +132,8 @@ export default function ProfilePage({
   const [followLoading, setFollowLoading] = useState(false);
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
+  const [rewardHistory, setRewardHistory] = useState<RewardHistoryResponse | null>(null);
+  const [rewardsLoading, setRewardsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("about");
 
   const isOwnProfile = user?.uid === uid;
@@ -121,7 +168,6 @@ export default function ProfilePage({
 
   const fetchFollowers = async () => {
     try {
-      // Replace hardcoded URL with adaptive URL
       const response = await fetch(`${apiUrl}/api/users/${uid}/followers`);
       const data = await response.json();
       setFollowers(data.followers || []);
@@ -130,10 +176,8 @@ export default function ProfilePage({
     }
   };
 
-
- const fetchFollowing = async () => {
+  const fetchFollowing = async () => {
     try {
-      // Replace hardcoded URL with adaptive URL
       const response = await fetch(`${apiUrl}/api/users/${uid}/following`);
       const data = await response.json();
       setFollowing(data.following || []);
@@ -142,7 +186,25 @@ export default function ProfilePage({
     }
   };
 
- const handleFollow = async () => {
+  const fetchRewardHistory = async (page = 1) => {
+    setRewardsLoading(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/rewards/user/${uid}/history?page=${page}&limit=10`);
+      const data = await response.json();
+      setRewardHistory(data);
+    } catch (error) {
+      console.error("Error fetching reward history:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o histórico de recompensas",
+        variant: "destructive",
+      });
+    } finally {
+      setRewardsLoading(false);
+    }
+  };
+
+  const handleFollow = async () => {
     if (!user) {
       toast({
         title: "Login necessário",
@@ -154,7 +216,6 @@ export default function ProfilePage({
 
     setFollowLoading(true);
     try {
-      // Replace hardcoded URLs with adaptive URLs
       const endpoint = profileUser?.isFollowing
         ? `${apiUrl}/api/users/unfollow`
         : `${apiUrl}/api/users/follow`;
@@ -174,7 +235,6 @@ export default function ProfilePage({
         throw new Error("Erro ao processar seguimento");
       }
 
-      // Atualizar estado local
       setProfileUser((prev) =>
         prev
           ? {
@@ -226,6 +286,36 @@ export default function ProfilePage({
         return <Twitter className="w-4 h-4" />;
       default:
         return <ExternalLink className="w-4 h-4" />;
+    }
+  };
+
+  const getRewardTypeIcon = (type: string) => {
+    switch (type) {
+      case 'digital': return <Monitor className="w-4 h-4" />;
+      case 'physical': return <Package className="w-4 h-4" />;
+      case 'experience': return <Star className="w-4 h-4" />;
+      case 'discount': return <Award className="w-4 h-4" />;
+      default: return <Gift className="w-4 h-4" />;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'processing': return <Clock className="w-5 h-5 text-yellow-500" />;
+      case 'pending': return <Clock className="w-5 h-5 text-blue-500" />;
+      case 'cancelled': return <XCircle className="w-5 h-5 text-red-500" />;
+      default: return <Clock className="w-5 h-5 text-slate-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-700';
+      case 'processing': return 'bg-yellow-100 text-yellow-700';
+      case 'pending': return 'bg-blue-100 text-blue-700';
+      case 'cancelled': return 'bg-red-100 text-red-700';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
@@ -332,8 +422,6 @@ export default function ProfilePage({
                   <Calendar className="w-4 h-4 mr-1" />
                   Member since &nbsp;
                   <p>{toDate(profileUser.created_at)?.toLocaleDateString()}</p>
-
-
                 </div>
               </div>
 
@@ -367,33 +455,33 @@ export default function ProfilePage({
           {/* Stats Cards */}
           <div className="lg:col-span-1 space-y-6">
             <Card>
-  <CardHeader>
-    <CardTitle className="flex items-center">
-      <Zap className="w-5 h-5 mr-2 text-purple-600" />
-      Engagement Level
-    </CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="flex items-center justify-between mb-2">
-      <div className="text-2xl font-bold text-purple-600">
-        Level {Math.floor((profileUser.engagement_xp || 0) / 100)}
-      </div>
-      <span className="text-sm text-slate-500">
-        {profileUser.engagement_xp % 100}/100 XP
-      </span>
-    </div>
-    <div className="w-full bg-purple-100 rounded-full h-3 overflow-hidden">
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{
-          width: `${(profileUser.engagement_xp % 100)}%`
-        }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="h-full bg-purple-500"
-      />
-    </div>
-  </CardContent>
-</Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Zap className="w-5 h-5 mr-2 text-purple-600" />
+                  Engagement Level
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-2xl font-bold text-purple-600">
+                    Level {Math.floor((profileUser.engagement_xp || 0) / 100)}
+                  </div>
+                  <span className="text-sm text-slate-500">
+                    {profileUser.engagement_xp % 100}/100 XP
+                  </span>
+                </div>
+                <div className="w-full bg-purple-100 rounded-full h-3 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${(profileUser.engagement_xp % 100)}%`
+                    }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="h-full bg-purple-500"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
@@ -453,10 +541,11 @@ export default function ProfilePage({
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="about">Sobre</TabsTrigger>
                 <TabsTrigger value="followers">Seguidores</TabsTrigger>
                 <TabsTrigger value="following">Seguindo</TabsTrigger>
+                <TabsTrigger value="rewards">Recompensas</TabsTrigger>
               </TabsList>
 
               <TabsContent value="about" className="space-y-6">
@@ -617,6 +706,168 @@ export default function ProfilePage({
                     </CardContent>
                   </Card>
                 ))}
+              </TabsContent>
+
+              <TabsContent value="rewards" className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-slate-800">
+                    Recompensas Resgatadas
+                  </h2>
+                  <Button
+                    onClick={() => fetchRewardHistory(1)}
+                    disabled={rewardsLoading}
+                    variant="outline"
+                  >
+                    {rewardsLoading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Gift className="w-4 h-4 mr-2" />
+                    )}
+                    {rewardHistory ? "Atualizar" : "Carregar Recompensas"}
+                  </Button>
+                </div>
+
+                {rewardsLoading && !rewardHistory ? (
+                  <div className="flex justify-center items-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                  </div>
+                ) : rewardHistory?.claims.length === 0 ? (
+                  <Card>
+                    <CardContent className="p-12 text-center">
+                      <Gift className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-600 mb-2">
+                        Nenhuma recompensa resgatada
+                      </h3>
+                      <p className="text-slate-500">
+                        {isOwnProfile 
+                          ? "Você ainda não resgatou nenhuma recompensa. Participe mais para ganhar tokens!"
+                          : "Este usuário ainda não resgatou nenhuma recompensa."
+                        }
+                      </p>
+                      {isOwnProfile && (
+                        <Button asChild className="mt-4">
+                          <Link href="/rewards">
+                            Ver Recompensas Disponíveis
+                          </Link>
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {rewardHistory?.claims.map((claim) => (
+                      <motion.div
+                        key={claim.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="border border-slate-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-start space-x-4 flex-1">
+                            {claim.rewardDetails.imageUrl && (
+                              <div className="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                  src={claim.rewardDetails.imageUrl}
+                                  alt={claim.rewardDetails.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                            
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                {getStatusIcon(claim.status)}
+                                <h3 className="font-semibold text-slate-900">
+                                  {claim.rewardDetails.title}
+                                </h3>
+                                <Badge className={getStatusColor(claim.status)}>
+                                  {claim.status}
+                                </Badge>
+                              </div>
+                              
+                              <p className="text-sm text-slate-600 mb-3">
+                                {claim.rewardDetails.description}
+                              </p>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div className="flex items-center space-x-2">
+                                  <Star className="w-4 h-4 text-yellow-500" />
+                                  <span className="text-slate-600">
+                                    {claim.tokensClaimed} tokens usados
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                  <Calendar className="w-4 h-4 text-slate-500" />
+                                  <span className="text-slate-600">
+                                    {new Date(claim.claimedAt).toLocaleDateString('pt-BR')}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                  {getRewardTypeIcon(claim.rewardDetails.type)}
+                                  <span className="text-slate-600 capitalize">
+                                    {claim.rewardDetails.type}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {claim.rewardDetails.details.instructions && (
+                                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                                  <p className="text-sm font-medium text-blue-700 mb-1">
+                                    Instruções:
+                                  </p>
+                                  <p className="text-sm text-blue-600">
+                                    {claim.rewardDetails.details.instructions}
+                                  </p>
+                                </div>
+                              )}
+
+                              {claim.rewardDetails.details.validUntil && (
+                                <div className="mt-2 text-sm text-slate-500">
+                                  Válido até: {new Date(claim.rewardDetails.details.validUntil).toLocaleDateString('pt-BR')}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-xs text-slate-500 pt-3 border-t">
+                          Level {claim.levelWhenClaimed} • {claim.xpWhenClaimed} XP quando resgatado
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* Pagination */}
+                    {rewardHistory && rewardHistory.pagination.totalPages > 1 && (
+                      <div className="flex items-center justify-between pt-4">
+                        <div className="text-sm text-slate-600">
+                          Página {rewardHistory.pagination.page} de {rewardHistory.pagination.totalPages}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchRewardHistory(rewardHistory.pagination.page - 1)}
+                            disabled={!rewardHistory.pagination.hasPrevPage || rewardsLoading}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                            Anterior
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchRewardHistory(rewardHistory.pagination.page + 1)}
+                            disabled={!rewardHistory.pagination.hasNextPage || rewardsLoading}
+                          >
+                            Próxima
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

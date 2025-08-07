@@ -22,7 +22,7 @@ import {
   Settings,
   Loader2,
 } from "lucide-react"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../../context/AuthContext"
 import Link from "next/link"
 
 interface Notification {

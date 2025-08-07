@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import WorkshopCard from './WorkshopCard';
-import { useAuth } from '@/app/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface WorkshopListProps {
   initialFilters?: WorkshopFilters;

@@ -26,7 +26,7 @@ import {
   Globe,
   Type,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function EditProfilePage() {
   const { user } = useAuth();

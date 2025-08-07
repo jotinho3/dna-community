@@ -26,7 +26,7 @@ import {
   AlertCircle,
   Calendar
 } from "lucide-react";
-import { useNotifications } from "../app/context/NotificationContext";
+import { useNotifications } from "../context/NotificationContext";
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

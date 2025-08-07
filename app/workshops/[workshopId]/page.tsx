@@ -36,7 +36,7 @@ import {
   DollarSign,
   UserCheck,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useWorkshop } from "../../../hooks/useWorkshops";
 import { Workshop, WorkshopStatus } from "../../../types/workshop";
 import WorkshopEditForm from "../../../components/WorkshopEditorForm";

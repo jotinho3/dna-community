@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Loader2, Send, Code, Bold, Italic, List, Link2, X, Plus, HelpCircle } from "lucide-react"
-import { useAuth } from "../context/AuthContext" // <-- updated import path
+import { useAuth } from "../../context/AuthContext" // <-- updated import path
 import Link from "next/link"
 
 export default function AskQuestionPage() {
