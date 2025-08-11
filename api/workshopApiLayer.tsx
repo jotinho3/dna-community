@@ -4,10 +4,11 @@ class WorkshopService {
   private baseUrl: string;
   private apiUrl: string;
 
-constructor(apiUrl: string = 'http://localhost:8080') {
-    this.apiUrl = apiUrl;
-    this.baseUrl = `${apiUrl}/api/workshops`; // Construct full workshop API URL
-  }
+
+constructor(apiUrl: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080') {
+  this.apiUrl = apiUrl;
+  this.baseUrl = `${apiUrl}/api/workshops`; // Construct full workshop API URL
+}
 
   // Helper method to create notifications
   private async createNotification(userId: string, subType: string, data: any) {

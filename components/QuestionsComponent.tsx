@@ -47,16 +47,18 @@ export function QuestionsList() {
   const [hasMore, setHasMore] = useState(true)
   const [activeTab, setActiveTab] = useState("all")
 
+  // ...existing code...
+  
   // Fetch questions
   useEffect(() => {
     setLoading(true)
     setError(null)
-    let url = `http://localhost:8080/api/qa/questions?limit=10&page=${page}`
+    let url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/qa/questions?limit=10&page=${page}`
     if (search) url += `&search=${encodeURIComponent(search)}`
     if (tagFilter) url += `&tags=${encodeURIComponent(tagFilter)}`
     if (resolvedFilter === "resolved") url += `&resolved=true`
     if (resolvedFilter === "unresolved") url += `&resolved=false`
-
+  
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -71,7 +73,8 @@ export function QuestionsList() {
       .finally(() => setLoading(false))
     // eslint-disable-next-line
   }, [search, tagFilter, resolvedFilter, page])
-
+  
+  // ...existing code...
   // Filter questions based on tab
   const getFilteredQuestions = () => {
     switch (activeTab) {
