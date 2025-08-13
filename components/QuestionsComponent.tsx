@@ -101,7 +101,7 @@ export function QuestionsList() {
   const unresolvedQuestions = totalQuestions - resolvedQuestions
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -118,7 +118,7 @@ export function QuestionsList() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 asChild
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className=" bg-primary-600 hover:bg-primary-700"
               >
                 <Link href="/questions/ask">
                   <Plus className="w-4 h-4 mr-2" />

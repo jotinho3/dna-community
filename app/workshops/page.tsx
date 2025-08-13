@@ -127,20 +127,19 @@ export default function WorkshopsPage() {
     }
   };
 
-  if (showCreateForm) {
+ if (showCreateForm) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
             <Button
               variant="outline"
               onClick={() => setShowCreateForm(false)}
-              className="mb-4"
+              className="mb-4 border-primary-600 text-primary-700 hover:bg-primary-100"
             >
               ← Back to Workshops
             </Button>
           </div>
-
           <WorkshopCreationForm
             onWorkshopCreated={handleWorkshopCreated}
             onCancel={() => setShowCreateForm(false)}
@@ -151,26 +150,24 @@ export default function WorkshopsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+  <div className="min-h-screen bg-primary-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-primary-900 border-b border-primary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="text-center lg:text-left mb-6 lg:mb-0">
-              <h1 className="text-4xl font-bold text-slate-800 mb-4">
+              <h1 className="text-4xl font-bold text-primary-50 mb-4">
                 Data Science Workshops
               </h1>
-              <p className="text-xl text-slate-600 max-w-3xl">
-                Level up your data skills with hands-on workshops taught by
-                industry experts
+              <p className="text-xl text-primary-200 max-w-3xl">
+                Level up your data skills with hands-on workshops taught by industry experts
               </p>
             </div>
-
             {user && (
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={() => setShowCreateForm(true)}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="bg-primary-600 hover:bg-primary-700 text-primary-50"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Workshop
@@ -181,73 +178,70 @@ export default function WorkshopsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* User Dashboard (if logged in) */}
         {user && userStats && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">
+            <h2 className="text-2xl font-bold text-primary-800 mb-4">
               Your Workshop Journey
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <BookOpen className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-primary-700">
                         Total Enrollments
                       </p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-2xl font-bold text-primary-900">
                         {userStats.totalEnrollments}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <Award className="w-5 h-5 text-green-600" />
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <Award className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Completed</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-sm text-primary-700">Completed</p>
+                      <p className="text-2xl font-bold text-primary-900">
                         {userStats.completedWorkshops}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Award className="w-5 h-5 text-purple-600" />
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <Award className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Certificates</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-sm text-primary-700">Certificates</p>
+                      <p className="text-2xl font-bold text-primary-900">
                         {userStats.certificatesEarned}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-orange-100 rounded-lg">
-                      <Calendar className="w-5 h-5 text-orange-600" />
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <Calendar className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Upcoming</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-sm text-primary-700">Upcoming</p>
+                      <p className="text-2xl font-bold text-primary-900">
                         {userStats.upcomingWorkshops}
                       </p>
                     </div>
@@ -255,16 +249,15 @@ export default function WorkshopsPage() {
                 </CardContent>
               </Card>
             </div>
-
             {/* Quick Access to User's Workshops */}
             {upcomingWorkshops.length > 0 && (
               <Card className="mb-6">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-primary-800">
                     <Calendar className="w-5 h-5 mr-2" />
                     Your Upcoming Workshops
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-primary-700">
                     Workshops you're enrolled in that are starting soon
                   </CardDescription>
                 </CardHeader>
@@ -273,19 +266,17 @@ export default function WorkshopsPage() {
                     {upcomingWorkshops.slice(0, 3).map((workshop) => (
                       <div
                         key={workshop.id}
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                        className="flex items-center justify-between p-3 bg-primary-50 rounded-lg hover:bg-primary-100 cursor-pointer transition-colors"
                         onClick={() => handleWorkshopSelect(workshop.id)}
                       >
                         <div className="flex-1">
-                          <h4 className="font-medium text-slate-900">
+                          <h4 className="font-medium text-primary-900">
                             {workshop.title}
                           </h4>
-                          <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                          <div className="flex items-center space-x-4 text-sm text-primary-700 mt-1">
                             <span className="flex items-center">
                               <Calendar className="w-4 h-4 mr-1" />
-                              {new Date(
-                                workshop.scheduledDate
-                              ).toLocaleDateString()}
+                              {new Date(workshop.scheduledDate).toLocaleDateString()}
                             </span>
                             <span className="flex items-center">
                               <Clock className="w-4 h-4 mr-1" />
@@ -296,7 +287,7 @@ export default function WorkshopsPage() {
                             </Badge>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-primary-600 text-primary-700 hover:bg-primary-100">
                           View Details
                         </Button>
                       </div>
@@ -307,6 +298,7 @@ export default function WorkshopsPage() {
                       <Button
                         variant="ghost"
                         onClick={() => setActiveTab("my-enrollments")}
+                        className="text-primary-700 hover:text-primary-900"
                       >
                         View All ({upcomingWorkshops.length})
                       </Button>
@@ -320,7 +312,7 @@ export default function WorkshopsPage() {
 
         {/* Category Filters */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">
+          <h3 className="text-lg font-semibold text-primary-800 mb-4">
             Browse by Category
           </h3>
           <div className="flex flex-wrap gap-3">
@@ -333,7 +325,7 @@ export default function WorkshopsPage() {
                   setActiveTab("category");
                   // You could set a category filter here
                 }}
-                className="flex items-center hover:bg-emerald-50 hover:border-emerald-200"
+                className="flex items-center border-primary-200 text-primary-700 hover:bg-primary-100"
               >
                 <category.icon className="w-4 h-4 mr-2" />
                 {category.name}
@@ -343,16 +335,16 @@ export default function WorkshopsPage() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
-            <TabsTrigger value="all">All Workshops</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="free">Free</TabsTrigger>
-            <TabsTrigger value="recorded">Recorded</TabsTrigger>
+     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8 bg-primary-100 border-primary-200">
+            <TabsTrigger value="all" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">All Workshops</TabsTrigger>
+            <TabsTrigger value="upcoming" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">Upcoming</TabsTrigger>
+            <TabsTrigger value="free" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">Free</TabsTrigger>
+            <TabsTrigger value="recorded" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">Recorded</TabsTrigger>
             {user && (
               <>
-                <TabsTrigger value="my-enrollments">My Enrollments</TabsTrigger>
-                <TabsTrigger value="my-workshops">My Workshops</TabsTrigger>
+                <TabsTrigger value="my-enrollments" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">My Enrollments</TabsTrigger>
+                <TabsTrigger value="my-workshops" className="text-primary-700 data-[state=active]:bg-primary-400 data-[state=active]:text-primary-50">My Workshops</TabsTrigger>
               </>
             )}
           </TabsList>
@@ -482,7 +474,7 @@ export default function WorkshopsPage() {
                   </h3>
                   <Button
                     onClick={() => setShowCreateForm(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700"
+                    className="bg-primary-600 hover:bg-primary-700"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Create New Workshop
@@ -592,7 +584,7 @@ export default function WorkshopsPage() {
           </TabsContent>
         </Tabs>
 
-        {/* Error Display */}
+       {/* Error Display */}
         {error && (
           <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-600 text-sm">{error}</p>
@@ -602,8 +594,8 @@ export default function WorkshopsPage() {
         {/* Loading State */}
         {loading && workshops.length === 0 && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-            <p className="text-slate-600">Loading workshops...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-primary-700">Loading workshops...</p>
           </div>
         )}
       </div>

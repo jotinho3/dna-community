@@ -184,13 +184,13 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white border-b border-primary-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-slate-800 mb-4">DataHub News</h1>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <h1 className="text-4xl font-bold text-primary-900 mb-4">DataHub News</h1>
+            <p className="text-xl text-primary-700 max-w-3xl mx-auto">
               Stay updated with the latest developments in data science, AI, and technology
             </p>
           </div>
@@ -202,7 +202,7 @@ export default function NewsPage() {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-300 w-4 h-4" />
               <Input
                 placeholder="Search articles, topics, or authors..."
                 value={searchQuery}
@@ -242,7 +242,11 @@ export default function NewsPage() {
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category.id)}
-                className={selectedCategory === category.id ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+                className={
+                  selectedCategory === category.id
+                    ? "bg-primary-600 hover:bg-primary-700 text-primary-50"
+                    : "border-primary-200 text-primary-700 hover:bg-primary-100"
+                }
               >
                 <category.icon className="w-4 h-4 mr-2" />
                 {category.name}
@@ -252,10 +256,10 @@ export default function NewsPage() {
         </div>
 
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:w-96">
-            <TabsTrigger value="all">All Articles</TabsTrigger>
-            <TabsTrigger value="featured">Featured</TabsTrigger>
-            <TabsTrigger value="trending">Trending</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 lg:w-96 bg-primary-100 border-primary-200">
+            <TabsTrigger value="all" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">All Articles</TabsTrigger>
+            <TabsTrigger value="featured" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Featured</TabsTrigger>
+            <TabsTrigger value="trending" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Trending</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-6">
@@ -275,27 +279,33 @@ export default function NewsPage() {
                       <div className="md:w-2/3">
                         <CardHeader>
                           <div className="flex items-center space-x-2 mb-2">
-                            <Badge variant="secondary">{categories.find((c) => c.id === article.category)?.name}</Badge>
+                            <Badge variant="secondary" className="bg-primary-100 text-primary-700">
+                              {categories.find((c) => c.id === article.category)?.name}
+                            </Badge>
                             {article.trending && (
-                              <Badge className="bg-red-500 hover:bg-red-600">
+                              <Badge className="bg-red-500 hover:bg-red-600 text-white">
                                 <TrendingUp className="w-3 h-3 mr-1" />
                                 Trending
                               </Badge>
                             )}
-                            {article.featured && <Badge className="bg-amber-500 hover:bg-amber-600">Featured</Badge>}
+                            {article.featured && (
+                              <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
+                                Featured
+                              </Badge>
+                            )}
                           </div>
-                          <CardTitle className="text-xl hover:text-emerald-600 cursor-pointer">
+                          <CardTitle className="text-xl hover:text-primary-600 cursor-pointer">
                             <Link href={`/news/${article.id}`}>{article.title}</Link>
                           </CardTitle>
-                          <CardDescription className="text-sm line-clamp-2">{article.summary}</CardDescription>
+                          <CardDescription className="text-sm line-clamp-2 text-primary-700">{article.summary}</CardDescription>
                         </CardHeader>
 
                         <CardContent>
-                          <div className="flex items-center justify-between text-sm text-slate-600 mb-4">
+                          <div className="flex items-center justify-between text-sm text-primary-600 mb-4">
                             <div className="flex items-center space-x-4">
                               <div className="flex items-center">
                                 <Avatar className="w-6 h-6 mr-2">
-                                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
+                                  <AvatarFallback className="bg-primary-100 text-primary-700 text-xs">
                                     {article.authorAvatar}
                                   </AvatarFallback>
                                 </Avatar>
@@ -321,7 +331,7 @@ export default function NewsPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex flex-wrap gap-1">
                               {article.tags.slice(0, 3).map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
+                                <Badge key={tag} variant="outline" className="text-xs bg-primary-100 text-primary-700">
                                   {tag}
                                 </Badge>
                               ))}
@@ -355,14 +365,14 @@ export default function NewsPage() {
                   <CardContent className="space-y-4">
                     {trendingArticles.slice(0, 5).map((article, index) => (
                       <div key={article.id} className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-bold text-emerald-600">{index + 1}</span>
+                        <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-bold text-primary-600">{index + 1}</span>
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-sm line-clamp-2 hover:text-emerald-600 cursor-pointer">
+                          <h4 className="font-semibold text-sm line-clamp-2 hover:text-primary-600 cursor-pointer">
                             <Link href={`/news/${article.id}`}>{article.title}</Link>
                           </h4>
-                          <div className="flex items-center text-xs text-slate-500 mt-1">
+                          <div className="flex items-center text-xs text-primary-500 mt-1">
                             <Eye className="w-3 h-3 mr-1" />
                             {article.views.toLocaleString()} views
                           </div>
@@ -382,7 +392,7 @@ export default function NewsPage() {
                       <Button
                         key={category.id}
                         variant="ghost"
-                        className="w-full justify-start"
+                        className="w-full justify-start text-primary-700 hover:bg-primary-100"
                         onClick={() => setSelectedCategory(category.id)}
                       >
                         <category.icon className="w-4 h-4 mr-2" />
@@ -405,19 +415,19 @@ export default function NewsPage() {
                       alt={article.title}
                       className="w-full h-48 object-cover rounded-t-lg"
                     />
-                    <Badge className="absolute top-2 left-2 bg-amber-500 hover:bg-amber-600">Featured</Badge>
+                    <Badge className="absolute top-2 left-2 bg-amber-500 hover:bg-amber-600 text-white">Featured</Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="hover:text-emerald-600 cursor-pointer">
+                    <CardTitle className="hover:text-primary-600 cursor-pointer">
                       <Link href={`/news/${article.id}`}>{article.title}</Link>
                     </CardTitle>
-                    <CardDescription>{article.summary}</CardDescription>
+                    <CardDescription className="text-primary-700">{article.summary}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between text-sm text-slate-600">
+                    <div className="flex items-center justify-between text-sm text-primary-600">
                       <div className="flex items-center">
                         <Avatar className="w-6 h-6 mr-2">
-                          <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
+                          <AvatarFallback className="bg-primary-100 text-primary-700 text-xs">
                             {article.authorAvatar}
                           </AvatarFallback>
                         </Avatar>
@@ -444,19 +454,19 @@ export default function NewsPage() {
                       alt={article.title}
                       className="w-full h-48 object-cover rounded-t-lg"
                     />
-                    <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
+                    <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600 text-white">
                       <TrendingUp className="w-3 h-3 mr-1" />
                       Trending
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-lg hover:text-emerald-600 cursor-pointer">
+                    <CardTitle className="text-lg hover:text-primary-600 cursor-pointer">
                       <Link href={`/news/${article.id}`}>{article.title}</Link>
                     </CardTitle>
-                    <CardDescription className="line-clamp-2">{article.summary}</CardDescription>
+                    <CardDescription className="line-clamp-2 text-primary-700">{article.summary}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between text-sm text-slate-600">
+                    <div className="flex items-center justify-between text-sm text-primary-600">
                       <div className="flex items-center">
                         <Eye className="w-4 h-4 mr-1" />
                         {article.views.toLocaleString()}
@@ -475,9 +485,9 @@ export default function NewsPage() {
 
         {filteredArticles.length === 0 && (
           <div className="text-center py-12">
-            <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">No articles found</h3>
-            <p className="text-slate-500">Try adjusting your search criteria or browse all articles.</p>
+            <Search className="w-16 h-16 text-primary-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-primary-700 mb-2">No articles found</h3>
+            <p className="text-primary-600">Try adjusting your search criteria or browse all articles.</p>
           </div>
         )}
       </div>

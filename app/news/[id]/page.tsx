@@ -103,11 +103,11 @@ export default function NewsArticlePage({
     },
   ]
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="text-primary-700 hover:bg-primary-100">
             <Link href="/news">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to News
@@ -119,35 +119,35 @@ export default function NewsArticlePage({
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
-              <Badge variant="secondary">{article.category}</Badge>
+              <Badge variant="secondary" className="bg-primary-100 text-primary-700">{article.category}</Badge>
               {article.trending && (
-                <Badge className="bg-red-500 hover:bg-red-600">
+                <Badge className="bg-red-500 hover:bg-red-600 text-white">
                   <TrendingUp className="w-3 h-3 mr-1" />
                   Trending
                 </Badge>
               )}
             </div>
 
-            <h1 className="text-4xl font-bold text-slate-800 mb-4 leading-tight">{article.title}</h1>
+            <h1 className="text-4xl font-bold text-primary-900 mb-4 leading-tight">{article.title}</h1>
 
-            <p className="text-xl text-slate-600 mb-6">{article.summary}</p>
+            <p className="text-xl text-primary-700 mb-6">{article.summary}</p>
 
             {/* Article Meta */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div className="flex items-center space-x-4">
                 <Avatar className="w-12 h-12">
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700">{article.authorAvatar}</AvatarFallback>
+                  <AvatarFallback className="bg-primary-100 text-primary-700">{article.authorAvatar}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="font-semibold text-slate-800">{article.author}</div>
-                  <div className="flex items-center text-sm text-slate-600">
+                  <div className="font-semibold text-primary-900">{article.author}</div>
+                  <div className="flex items-center text-sm text-primary-700">
                     <Calendar className="w-4 h-4 mr-1" />
                     {formatDate(article.publishedAt)}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-6 text-sm text-slate-600">
+              <div className="flex items-center space-x-6 text-sm text-primary-700">
                 <div className="flex items-center">
                   <Clock className="w-4 h-4 mr-1" />
                   {article.readTime}
@@ -161,19 +161,19 @@ export default function NewsArticlePage({
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-4 mb-8">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-primary-200 text-primary-700 hover:bg-primary-100">
                 <ThumbsUp className="w-4 h-4 mr-2" />
                 {article.likes}
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-primary-200 text-primary-700 hover:bg-primary-100">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 {article.comments}
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-primary-200 text-primary-700 hover:bg-primary-100">
                 <Bookmark className="w-4 h-4 mr-2" />
                 Save
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-primary-200 text-primary-700 hover:bg-primary-100">
                 <Share className="w-4 h-4 mr-2" />
                 Share
               </Button>
@@ -190,16 +190,16 @@ export default function NewsArticlePage({
           </div>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none mb-8">
+          <div className="prose prose-lg max-w-none mb-8 prose-primary">
             <div dangerouslySetInnerHTML={{ __html: article.content }} />
           </div>
 
           {/* Tags */}
           <div className="mb-8">
-            <h3 className="font-semibold text-slate-800 mb-3">Tags</h3>
+            <h3 className="font-semibold text-primary-900 mb-3">Tags</h3>
             <div className="flex flex-wrap gap-2">
               {article.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
+                <Badge key={tag} variant="outline" className="bg-primary-50 text-primary-700">
                   {tag}
                 </Badge>
               ))}
@@ -213,14 +213,14 @@ export default function NewsArticlePage({
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
                 <Avatar className="w-16 h-16">
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-lg">
+                  <AvatarFallback className="bg-primary-100 text-primary-700 text-lg">
                     {article.authorAvatar}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-slate-800 mb-2">About {article.author}</h3>
-                  <p className="text-slate-600 mb-4">{article.authorBio}</p>
-                  <Button variant="outline" size="sm">
+                  <h3 className="font-semibold text-lg text-primary-900 mb-2">About {article.author}</h3>
+                  <p className="text-primary-700 mb-4">{article.authorBio}</p>
+                  <Button variant="outline" size="sm" className="border-primary-200 text-primary-700 hover:bg-primary-100">
                     <User className="w-4 h-4 mr-2" />
                     View Profile
                   </Button>
@@ -232,20 +232,20 @@ export default function NewsArticlePage({
           {/* Related Articles */}
           <Card>
             <CardHeader>
-              <CardTitle>Related Articles</CardTitle>
+              <CardTitle className="text-primary-900">Related Articles</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {relatedArticles.map((relatedArticle) => (
                   <div
                     key={relatedArticle.id}
-                    className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="flex items-center justify-between p-4 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
                   >
                     <div className="flex-1">
-                      <h4 className="font-semibold text-slate-800 hover:text-emerald-600 cursor-pointer">
+                      <h4 className="font-semibold text-primary-900 hover:text-primary-600 cursor-pointer">
                         <Link href={`/news/${relatedArticle.id}`}>{relatedArticle.title}</Link>
                       </h4>
-                      <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                      <div className="flex items-center space-x-4 text-sm text-primary-700 mt-1">
                         <div className="flex items-center">
                           <Clock className="w-3 h-3 mr-1" />
                           {relatedArticle.readTime}

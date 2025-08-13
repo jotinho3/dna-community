@@ -169,7 +169,7 @@ export function AskQuestionForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 rounded-xl">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
@@ -184,7 +184,7 @@ export function AskQuestionForm() {
         {/* Main Form Card */}
         <Card className="shadow-lg border-emerald-100">
           <CardHeader>
-            <CardTitle className="flex items-center text-emerald-700">
+            <CardTitle className="flex items-center text-primary-600">
               <HelpCircle className="w-6 h-6 mr-2" />
               Ask a Question
             </CardTitle>

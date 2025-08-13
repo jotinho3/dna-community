@@ -22,7 +22,7 @@ import {
   ThumbsUp,
   Loader2,
 } from "lucide-react";
-import { NewsCarousel } from "@/components/news-carousel";
+import { NewsCarousel } from "@/components/home/news-carousel";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -110,8 +110,8 @@ export default function HomePage() {
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+     <>
+      <div className="min-h-screen bg-primary-50">
         {/* News Carousel Hero Section */}
         <section>
           <div className="max-w-full">
@@ -122,31 +122,31 @@ export default function HomePage() {
         {/* Community Stats */}
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-slate-800 mb-8">Join the Leading Data Community</h2>
+            <h2 className="text-3xl font-bold text-primary-800 mb-8">Join the Leading Data Community</h2>
 
             <div className="flex flex-wrap justify-center gap-8 mb-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-600">50K+</div>
-                <div className="text-slate-600">Active Members</div>
+                <div className="text-3xl font-bold text-primary-600">50K+</div>
+                <div className="text-primary-700">Active Members</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-teal-600">25K+</div>
-                <div className="text-slate-600">Questions Answered</div>
+                <div className="text-3xl font-bold text-primary-500">25K+</div>
+                <div className="text-primary-700">Questions Answered</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-600">100+</div>
-                <div className="text-slate-600">Expert Contributors</div>
+                <div className="text-3xl font-bold text-primary-400">100+</div>
+                <div className="text-primary-700">Expert Contributors</div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700" asChild>
+              <Button size="lg" className="bg-primary-600 hover:bg-primary-700 text-primary-50" asChild>
                 <Link href="/signup">
                   <Users className="w-5 h-5 mr-2" />
                   Join the Community
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="border-primary-600 text-primary-700 hover:bg-primary-100" asChild>
                 <Link href="/questions">
                   <BookOpen className="w-5 h-5 mr-2" />
                   Explore Topics
@@ -157,18 +157,18 @@ export default function HomePage() {
         </section>
 
         {/* Categories Section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-primary-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">Popular Topics</h2>
-              <p className="text-slate-600">
+              <h2 className="text-3xl font-bold text-primary-800 mb-4">Popular Topics</h2>
+              <p className="text-primary-700">
                 Explore discussions across different areas of data analytics and technology
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.map((category, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-slate-200">
+                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-primary-200">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`p-3 rounded-lg ${category.color}`}>
@@ -176,8 +176,8 @@ export default function HomePage() {
                       </div>
                       <Badge variant="secondary">{category.count} questions</Badge>
                     </div>
-                    <h3 className="font-semibold text-slate-800 mb-2">{category.name}</h3>
-                    <p className="text-sm text-slate-600">Join the discussion and share your expertise</p>
+                    <h3 className="font-semibold text-primary-800 mb-2">{category.name}</h3>
+                    <p className="text-sm text-primary-700">Join the discussion and share your expertise</p>
                   </CardContent>
                 </Card>
               ))}
@@ -186,14 +186,14 @@ export default function HomePage() {
         </section>
 
         {/* Recent Questions */}
-        <section className="py-16 bg-slate-50">
+        <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-12">
               <div>
-                <h2 className="text-3xl font-bold text-slate-800 mb-4">Recent Questions</h2>
-                <p className="text-slate-600">Latest discussions from our community</p>
+                <h2 className="text-3xl font-bold text-primary-800 mb-4">Recent Questions</h2>
+                <p className="text-primary-700">Latest discussions from our community</p>
               </div>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="border-primary-600 text-primary-700 hover:bg-primary-100" asChild>
                 <Link href="/questions">
                   View All <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -202,7 +202,7 @@ export default function HomePage() {
 
             {loading ? (
               <div className="flex justify-center items-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
               </div>
             ) : error ? (
               <div className="text-center py-12">
@@ -210,15 +210,16 @@ export default function HomePage() {
                 <Button 
                   variant="outline" 
                   onClick={() => window.location.reload()}
+                  className="border-primary-600 text-primary-700 hover:bg-primary-100"
                 >
                   Try Again
                 </Button>
               </div>
             ) : questions.length === 0 ? (
               <div className="text-center py-12">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No questions yet</p>
-                <Button asChild>
+                <MessageSquare className="h-12 w-12 text-primary-200 mx-auto mb-4" />
+                <p className="text-primary-700 mb-4">No questions yet</p>
+                <Button asChild className="bg-primary-600 hover:bg-primary-700 text-primary-50">
                   <Link href="/ask">
                     Ask the First Question
                   </Link>
@@ -227,22 +228,22 @@ export default function HomePage() {
             ) : (
               <div className="space-y-6">
                 {questions.map((question) => (
-                  <Card key={question.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                  <Card key={question.id} className="hover:shadow-md transition-shadow cursor-pointer border-primary-100">
                     <CardContent className="p-6">
                       <Link href={`/questions/${question.id}`}>
                         <div className="flex items-start space-x-4">
                           <Avatar className="w-10 h-10">
-                            <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                            <AvatarFallback className="bg-primary-100 text-primary-700">
                               {getInitials(question.authorName)}
                             </AvatarFallback>
                           </Avatar>
 
                           <div className="flex-1">
-                            <h3 className="font-semibold text-slate-800 mb-2 hover:text-emerald-600 transition-colors">
+                            <h3 className="font-semibold text-primary-800 mb-2 hover:text-primary-600 transition-colors">
                               {question.title}
                             </h3>
 
-                            <div className="flex items-center text-sm text-slate-600 mb-3">
+                            <div className="flex items-center text-sm text-primary-700 mb-3">
                               <span>Asked by {question.authorName}</span>
                               <span className="mx-2">•</span>
                               <span>{formatTimeAgo(question.createdAt)}</span>
@@ -258,7 +259,7 @@ export default function HomePage() {
 
                             {/* Content preview */}
                             {question.content && (
-                              <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                              <p className="text-sm text-primary-700 mb-3 line-clamp-2">
                                 {question.content.substring(0, 150)}
                                 {question.content.length > 150 ? '...' : ''}
                               </p>
@@ -277,7 +278,7 @@ export default function HomePage() {
                               )}
                             </div>
 
-                            <div className="flex items-center space-x-6 text-sm text-slate-500">
+                            <div className="flex items-center space-x-6 text-sm text-primary-500">
                               <div className="flex items-center">
                                 <ThumbsUp className="w-4 h-4 mr-1" />
                                 {getTotalReactions(question.reactions)}
@@ -305,15 +306,15 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-emerald-600 to-teal-600">
+        <section className="py-16 bg-gradient-to-r from-primary-700 to-primary-600">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Ready to Join the Conversation?</h2>
-            <p className="text-emerald-100 mb-8 text-lg">
+            <h2 className="text-3xl font-bold text-primary-50 mb-4">Ready to Join the Conversation?</h2>
+            <p className="text-primary-200 mb-8 text-lg">
               Connect with data professionals, share your knowledge, and grow your career
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-emerald-600 hover:bg-slate-50" asChild>
+              <Button size="lg" className="bg-primary-50 text-primary-700 hover:bg-primary-100" asChild>
                 <Link href="/questions">
                   <Star className="w-5 h-5 mr-2" />
                   Start Contributing
@@ -322,7 +323,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-emerald-600 bg-transparent"
+                className="border-primary-50 text-primary-50 hover:bg-primary-50 hover:text-primary-700 bg-transparent"
                 asChild
               >
                 <Link href="/ask">
