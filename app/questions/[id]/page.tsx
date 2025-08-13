@@ -163,7 +163,7 @@ const parseFirestoreTimestamp = (timestamp: any): Date => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
         <div className="flex justify-center items-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
@@ -176,7 +176,7 @@ const parseFirestoreTimestamp = (timestamp: any): Date => {
 
   if (error || !question) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Card className="p-8 text-center">
             <HelpCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
@@ -202,7 +202,7 @@ const parseFirestoreTimestamp = (timestamp: any): Date => {
   const acceptedAnswer = answers.find((answer) => answer.isAccepted);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -238,8 +238,8 @@ const parseFirestoreTimestamp = (timestamp: any): Date => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-emerald-100 rounded-lg">
-                  <ChevronUp className="w-5 h-5 text-emerald-600" />
+                <div className="p-2 bg-primary-100 rounded-lg">
+                  <ChevronUp className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
                   <p className="text-sm text-slate-600">Score</p>
@@ -584,11 +584,11 @@ const parseFirestoreTimestamp = (timestamp: any): Date => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
         >
-          <Card className="shadow-lg border-emerald-100">
+          <Card className="shadow-lg border-primary-100">
             <CardHeader>
-              <CardTitle className="flex items-center text-emerald-700">
+              <CardTitle className="flex items-center text-primary-700">
                 <Send className="w-6 h-6 mr-2" />
-                Share Your Answer
+                Share Your Answer 
               </CardTitle>
               <CardDescription>
                 Help solve this question by sharing your knowledge and

@@ -348,8 +348,8 @@ export default function ProfilePage({
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-            <Avatar className="w-24 h-24">
-              <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl font-bold">
+            <Avatar className="w-24 h-24 bg-primary-200">
+              <AvatarFallback className="bg-primary-100 text-emerald-700 text-2xl font-bold">
                 {profileUser.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -477,7 +477,7 @@ export default function ProfilePage({
                       width: `${(profileUser.engagement_xp % 100)}%`
                     }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="h-full bg-purple-500"
+                    className="h-full bg-gradient-to-br from-purple-500 to-emerald-100"
                   />
                 </div>
               </CardContent>

@@ -329,11 +329,11 @@ useEffect(() => {
 
   if (loading && !currentWorkshop) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-            <p className="text-slate-600">Loading workshop...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-primary-700">Loading workshop...</p>
           </div>
         </div>
       </div>
@@ -342,16 +342,15 @@ useEffect(() => {
 
   if (error || !currentWorkshop) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
             <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">
+            <h3 className="text-lg font-semibold text-primary-700 mb-2">
               Workshop Not Found
             </h3>
-            <p className="text-slate-500 mb-4">
-              {error ||
-                "The workshop you're looking for doesn't exist or has been removed."}
+            <p className="text-primary-600 mb-4">
+              {error || "The workshop you're looking for doesn't exist or has been removed."}
             </p>
             <div className="space-x-2">
               <Button variant="outline" onClick={clearError}>
@@ -369,13 +368,13 @@ useEffect(() => {
 
   if (isEditing && isCreator) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
             <Button
               variant="outline"
               onClick={() => setIsEditing(false)}
-              className="mb-4"
+              className="mb-4 border-primary-600 text-primary-700 hover:bg-primary-100"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Workshop
@@ -391,17 +390,15 @@ useEffect(() => {
     );
   }
 
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <div className="min-h-screen bg-primary-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
           <Button
             variant="outline"
             onClick={() => router.push("/workshops")}
-            className="mb-4"
+            className="mb-4 border-primary-600 text-primary-700 hover:bg-primary-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Workshops
@@ -409,7 +406,7 @@ useEffect(() => {
         </div>
 
         {/* Workshop Header */}
-        <div className="bg-white rounded-lg border border-slate-200 p-8 mb-8">
+        <div className="bg-white rounded-lg border border-primary-200 p-8 mb-8">
           <div className="flex flex-col lg:flex-row items-start justify-between mb-6">
             <div className="flex-1 mb-6 lg:mb-0">
               <div className="flex items-center space-x-3 mb-4">
@@ -428,31 +425,31 @@ useEffect(() => {
                 </Badge>
               </div>
 
-              <h1 className="text-4xl font-bold text-slate-900 mb-4">
+              <h1 className="text-4xl font-bold text-primary-900 mb-4">
                 {currentWorkshop.title}
               </h1>
 
-              <p className="text-xl text-slate-600 mb-6">
+              <p className="text-xl text-primary-700 mb-6">
                 {currentWorkshop.shortDescription}
               </p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="flex items-center space-x-2 text-slate-600">
+                <div className="flex items-center space-x-2 text-primary-700">
                   <Calendar className="w-5 h-5" />
                   <span>{formatWorkshopDate(currentWorkshop)}</span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600">
+                <div className="flex items-center space-x-2 text-primary-700">
                   <Clock className="w-5 h-5" />
                   <span>{formatWorkshopTime(currentWorkshop)}</span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600">
+                <div className="flex items-center space-x-2 text-primary-700">
                   <Users className="w-5 h-5" />
                   <span>
                     {currentWorkshop.currentEnrollments}/
                     {currentWorkshop.maxParticipants}
                   </span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600">
+                <div className="flex items-center space-x-2 text-primary-700">
                   {currentWorkshop.format === "online" ? (
                     <Globe className="w-5 h-5" />
                   ) : currentWorkshop.format === "in_person" ? (
@@ -476,13 +473,13 @@ useEffect(() => {
                     <Button
                       onClick={() => setIsEditing(true)}
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 border-primary-600 text-primary-700 hover:bg-primary-100"
                       disabled={!canEditWorkshop()}
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" className="border-primary-600 text-primary-700 hover:bg-primary-100">
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -503,7 +500,7 @@ useEffect(() => {
                     <div className="text-center">
                       <Badge
                         variant="outline"
-                        className="bg-slate-50 text-slate-600"
+                        className="bg-primary-50 text-primary-700"
                       >
                         <Clock className="w-3 h-3 mr-1" />
                         Workshop has ended - No longer editable
@@ -515,7 +512,7 @@ useEffect(() => {
                     <Button
                       onClick={handlePublish}
                       disabled={loading}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-primary-50"
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       Publish Workshop
@@ -527,7 +524,7 @@ useEffect(() => {
                       <div className="text-center">
                         <Badge
                           variant="outline"
-                          className="bg-slate-50 text-slate-600"
+                          className="bg-primary-50 text-primary-700"
                         >
                           Cannot publish - Workshop has already started
                         </Badge>
@@ -535,7 +532,7 @@ useEffect(() => {
                     )}
 
                   <div className="text-center">
-                    <Badge variant="outline" className="bg-blue-50">
+                    <Badge variant="outline" className="bg-blue-50 text-primary-700">
                       <UserCheck className="w-3 h-3 mr-1" />
                       You are the creator
                     </Badge>
@@ -550,7 +547,7 @@ useEffect(() => {
                   {canJoinMeeting() && (
                     <Button
                       asChild
-                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-primary-50"
                     >
                       <a
                         href={currentWorkshop.meetingLink}
@@ -569,7 +566,7 @@ useEffect(() => {
                     <Button
                       onClick={handleEnroll}
                       disabled={enrollmentLoading}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-primary-50"
                     >
                       {enrollmentLoading ? (
                         <>
@@ -588,7 +585,7 @@ useEffect(() => {
                   {enrolled && (
                     <div className="space-y-2">
                       <div className="text-center">
-                        <Badge variant="default" className="bg-emerald-600">
+                        <Badge variant="default" className="bg-primary-600 text-primary-50">
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Enrolled
                         </Badge>
@@ -596,7 +593,7 @@ useEffect(() => {
 
                       {currentWorkshop.status === "published" &&
                         !canJoinMeeting() && (
-                          <p className="text-sm text-slate-600 text-center">
+                          <p className="text-sm text-primary-700 text-center">
                             Meeting link will be available 15 minutes before
                             start
                           </p>
@@ -606,7 +603,7 @@ useEffect(() => {
                         onClick={handleUnenroll}
                         disabled={enrollmentLoading}
                         variant="outline"
-                        className="w-full"
+                        className="w-full border-primary-600 text-primary-700 hover:bg-primary-100"
                       >
                         {enrollmentLoading ? (
                           <>
@@ -625,7 +622,7 @@ useEffect(() => {
 
                   {currentWorkshop.status !== "published" && (
                     <div className="text-center">
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" className="bg-primary-100 text-primary-700">
                         Workshop not yet published
                       </Badge>
                     </div>
@@ -636,7 +633,7 @@ useEffect(() => {
           </div>
 
           {/* Workshop Creator Info */}
-          <div className="border-t border-slate-200 pt-6">
+          <div className="border-t border-primary-200 pt-6">
             <div className="flex items-center space-x-4">
               {currentWorkshop.creatorAvatar && (
                 <img
@@ -646,10 +643,10 @@ useEffect(() => {
                 />
               )}
               <div>
-                <p className="font-medium text-slate-900">
+                <p className="font-medium text-primary-900">
                   {currentWorkshop.creatorName}
                 </p>
-                <p className="text-sm text-slate-600">Workshop Creator</p>
+                <p className="text-sm text-primary-700">Workshop Creator</p>
               </div>
             </div>
           </div>
@@ -657,15 +654,15 @@ useEffect(() => {
 
         {/* Workshop Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-8">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-8 bg-primary-100 border-primary-200">
+            <TabsTrigger value="overview" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Overview</TabsTrigger>
+            <TabsTrigger value="details" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Details</TabsTrigger>
+            <TabsTrigger value="requirements" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Requirements</TabsTrigger>
             {isCreator && (
               <>
-                <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
-                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+                <TabsTrigger value="enrollments" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Enrollments</TabsTrigger>
+                <TabsTrigger value="analytics" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Analytics</TabsTrigger>
+                <TabsTrigger value="settings" className="text-primary-700 data-[state=active]:bg-primary-600 data-[state=active]:text-primary-50">Settings</TabsTrigger>
               </>
             )}
           </TabsList>
@@ -678,11 +675,11 @@ useEffect(() => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                  <h3 className="text-lg font-semibold text-primary-900 mb-3">
                     Description
                   </h3>
-                  <div className="prose prose-slate max-w-none">
-                    <p className="text-slate-700 whitespace-pre-wrap">
+                  <div className="prose prose-primary max-w-none">
+                    <p className="text-primary-700 whitespace-pre-wrap">
                       {currentWorkshop.description}
                     </p>
                   </div>
@@ -691,7 +688,7 @@ useEffect(() => {
                 {currentWorkshop.learningObjectives &&
                   currentWorkshop.learningObjectives.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                      <h3 className="text-lg font-semibold text-primary-900 mb-3">
                         What You'll Learn
                       </h3>
                       <ul className="space-y-2">
@@ -701,8 +698,8 @@ useEffect(() => {
                               key={index}
                               className="flex items-start space-x-2"
                             >
-                              <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-slate-700">
+                              <CheckCircle className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-primary-700">
                                 {objective}
                               </span>
                             </li>
@@ -714,12 +711,12 @@ useEffect(() => {
 
                 {currentWorkshop.tags && currentWorkshop.tags.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    <h3 className="text-lg font-semibold text-primary-900 mb-3">
                       Topics
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {currentWorkshop.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline">
+                        <Badge key={index} variant="outline" className="bg-primary-100 text-primary-700">
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}
                         </Badge>
@@ -741,26 +738,26 @@ useEffect(() => {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-slate-600">
+                      <label className="text-sm font-medium text-primary-700">
                         Duration
                       </label>
-                      <p className="text-slate-900">
+                      <p className="text-primary-900">
                         {currentWorkshop.duration} minutes
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">
+                      <label className="text-sm font-medium text-primary-700">
                         Language
                       </label>
-                      <p className="text-slate-900">
+                      <p className="text-primary-900">
                         {currentWorkshop.language || "English"}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">
+                      <label className="text-sm font-medium text-primary-700">
                         Price
                       </label>
-                      <p className="text-slate-900 flex items-center">
+                      <p className="text-primary-900 flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />
                         {currentWorkshop.price === 0
                           ? "Free"
@@ -768,18 +765,18 @@ useEffect(() => {
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">
+                      <label className="text-sm font-medium text-primary-700">
                         Certificate
                       </label>
-                      <p className="text-slate-900 flex items-center">
+                      <p className="text-primary-900 flex items-center">
                         {currentWorkshop.issuesCertificate ? (
                           <>
-                            <Award className="w-4 h-4 mr-1 text-emerald-600" />
+                            <Award className="w-4 h-4 mr-1 text-primary-600" />
                             Available
                           </>
                         ) : (
                           <>
-                            <XCircle className="w-4 h-4 mr-1 text-slate-400" />
+                            <XCircle className="w-4 h-4 mr-1 text-primary-400" />
                             Not Available
                           </>
                         )}
@@ -789,10 +786,10 @@ useEffect(() => {
 
                   {currentWorkshop.location && (
                     <div>
-                      <label className="text-sm font-medium text-slate-600">
+                      <label className="text-sm font-medium text-primary-700">
                         Location
                       </label>
-                      <p className="text-slate-900 flex items-center">
+                      <p className="text-primary-900 flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
                         {currentWorkshop.location}
                       </p>
@@ -801,17 +798,17 @@ useEffect(() => {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">
+                      <span className="text-primary-700">
                         Enrollment Progress
                       </span>
-                      <span className="text-slate-900">
+                      <span className="text-primary-900">
                         {currentWorkshop.currentEnrollments}/
                         {currentWorkshop.maxParticipants}
                       </span>
                     </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="w-full bg-primary-200 rounded-full h-2">
                       <div
-                        className="bg-emerald-600 h-2 rounded-full"
+                        className="bg-primary-600 h-2 rounded-full"
                         style={{
                           width: `${Math.min(
                             (currentWorkshop.currentEnrollments /
@@ -833,38 +830,38 @@ useEffect(() => {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-700">Recorded Session</span>
+                      <span className="text-primary-700">Recorded Session</span>
                       {currentWorkshop.isRecorded ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <CheckCircle className="w-5 h-5 text-primary-600" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-slate-400" />
+                        <XCircle className="w-5 h-5 text-primary-400" />
                       )}
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-700">Interactive</span>
+                      <span className="text-primary-700">Interactive</span>
                       {currentWorkshop.isInteractive ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <CheckCircle className="w-5 h-5 text-primary-600" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-slate-400" />
+                        <XCircle className="w-5 h-5 text-primary-400" />
                       )}
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-700">Materials Provided</span>
+                      <span className="text-primary-700">Materials Provided</span>
                       {currentWorkshop.materialsProvided ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <CheckCircle className="w-5 h-5 text-primary-600" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-slate-400" />
+                        <XCircle className="w-5 h-5 text-primary-400" />
                       )}
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-700">Waitlist Available</span>
+                      <span className="text-primary-700">Waitlist Available</span>
                       {currentWorkshop.allowWaitlist ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <CheckCircle className="w-5 h-5 text-primary-600" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-slate-400" />
+                        <XCircle className="w-5 h-5 text-primary-400" />
                       )}
                     </div>
                   </div>
@@ -883,7 +880,7 @@ useEffect(() => {
                 {currentWorkshop.prerequisites &&
                   currentWorkshop.prerequisites.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                      <h3 className="text-lg font-semibold text-primary-900 mb-3">
                         Prerequisites
                       </h3>
                       <ul className="space-y-2">
@@ -892,8 +889,8 @@ useEffect(() => {
                             key={index}
                             className="flex items-start space-x-2"
                           >
-                            <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-slate-700">{prereq}</span>
+                            <div className="w-2 h-2 bg-primary-400 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-primary-700">{prereq}</span>
                           </li>
                         ))}
                       </ul>
@@ -902,10 +899,10 @@ useEffect(() => {
 
                 {currentWorkshop.targetAudience && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    <h3 className="text-lg font-semibold text-primary-900 mb-3">
                       Target Audience
                     </h3>
-                    <p className="text-slate-700">
+                    <p className="text-primary-700">
                       {currentWorkshop.targetAudience}
                     </p>
                   </div>
@@ -914,17 +911,17 @@ useEffect(() => {
                 {currentWorkshop.requiredTools &&
                   currentWorkshop.requiredTools.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                      <h3 className="text-lg font-semibold text-primary-900 mb-3">
                         Required Tools
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {currentWorkshop.requiredTools.map((tool, index) => (
                           <div
                             key={index}
-                            className="flex items-center space-x-2 p-2 bg-slate-50 rounded"
+                            className="flex items-center space-x-2 p-2 bg-primary-50 rounded"
                           >
-                            <Settings className="w-4 h-4 text-slate-600" />
-                            <span className="text-slate-700">{tool}</span>
+                            <Settings className="w-4 h-4 text-primary-700" />
+                            <span className="text-primary-700">{tool}</span>
                           </div>
                         ))}
                       </div>
@@ -955,7 +952,7 @@ useEffect(() => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">
+                    <p className="text-primary-700">
                       Analytics dashboard coming soon...
                     </p>
                   </CardContent>
@@ -971,7 +968,7 @@ useEffect(() => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">
+                    <p className="text-primary-700">
                       Advanced settings coming soon...
                     </p>
                   </CardContent>

@@ -26,7 +26,7 @@ import {
   AlertCircle,
   Calendar
 } from "lucide-react";
-import { useNotifications } from "../context/NotificationContext";
+import { useNotifications } from "../../context/NotificationContext";
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -176,8 +176,12 @@ const NotificationBell: React.FC = () => {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative">
+        <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="relative text-primary-50 hover:bg-primary-800 hover:text-primary-200"
+        >
           <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
             <Badge 

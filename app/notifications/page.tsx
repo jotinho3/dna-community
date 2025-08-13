@@ -211,7 +211,7 @@ const navigateToNotification = (notification: Notification) => {
       case "mention":
         return <TrendingUp className="w-5 h-5 text-orange-500" />
       default:
-        return <Bell className="w-5 h-5 text-slate-500" />
+        return <Bell className="w-5 h-5 text-primary-500" />
     }
   }
 
@@ -289,13 +289,13 @@ const navigateToNotification = (notification: Notification) => {
   // ... Keep all the existing JSX for loading, error, and no user states ...
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-slate-800 flex items-center">
-                <Bell className="w-8 h-8 mr-3 text-emerald-600" />
+                <Bell className="w-8 h-8 mr-3 text-primary-600" />
                 Notifications
                 {unreadCount > 0 && <Badge className="ml-3 bg-red-500 hover:bg-red-600">{unreadCount}</Badge>}
               </h1>
@@ -329,7 +329,7 @@ const navigateToNotification = (notification: Notification) => {
               {filteredNotifications.length === 0 ? (
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <Bell className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <Bell className="w-16 h-16 text-primary-300 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-slate-600 mb-2">
                       {filter === "unread" ? "No unread notifications" : "No notifications yet"}
                     </h3>
@@ -364,7 +364,7 @@ const navigateToNotification = (notification: Notification) => {
                                   {notification.user && (
                                     <div className="flex items-center">
                                       <Avatar className="w-4 h-4 mr-1">
-                                        <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
+                                        <AvatarFallback className="bg-primary-100 text-emerald-700 text-xs">
                                           {notification.user.avatar}
                                         </AvatarFallback>
                                       </Avatar>

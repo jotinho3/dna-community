@@ -75,20 +75,22 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-500 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-800">DNA Community</span>
+            <span className="text-xl font-bold text-primary-900">DNA Community</span>
           </div>
-          <CardTitle className="text-2xl">Join DNA Community</CardTitle>
+          <CardTitle className="text-2xl text-primary-900">Join DNA Community</CardTitle>
           <CardDescription>
-            Create your account to start contributing
+            <span className="text-primary-700">
+              Create your account to start contributing
+            </span>
             <br />
-            <span className="text-xs text-slate-500 mt-1">
+            <span className="text-xs text-primary-500 mt-1">
               Restricted to @infosys.com email addresses
             </span>
           </CardDescription>
@@ -102,7 +104,7 @@ export default function SignUpPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="text-primary-700">Full Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -114,7 +116,7 @@ export default function SignUpPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-primary-700">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -123,8 +125,8 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 className={
-                  email && !isValidEmailDomain(email) 
-                    ? "border-red-300 focus:border-red-500" 
+                  email && !isValidEmailDomain(email)
+                    ? "border-red-300 focus:border-red-500"
                     : ""
                 }
               />
@@ -136,7 +138,7 @@ export default function SignUpPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-primary-700">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -155,16 +157,16 @@ export default function SignUpPage() {
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-slate-400" />
+                    <EyeOff className="h-4 w-4 text-primary-300" />
                   ) : (
-                    <Eye className="h-4 w-4 text-slate-400" />
+                    <Eye className="h-4 w-4 text-primary-300" />
                   )}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-primary-700">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -182,21 +184,21 @@ export default function SignUpPage() {
                 onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
                 disabled={isLoading}
               />
-              <Label htmlFor="terms" className="text-sm">
+              <Label htmlFor="terms" className="text-sm text-primary-700">
                 I agree to the{" "}
-                <Link href="/terms" className="text-emerald-600 hover:text-emerald-700">
+                <Link href="/terms" className="text-primary-600 hover:text-primary-700">
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700">
+                <Link href="/privacy" className="text-primary-600 hover:text-primary-700">
                   Privacy Policy
                 </Link>
               </Label>
             </div>
 
-                       <Button 
-              type="submit" 
-              className="w-full bg-emerald-600 hover:bg-emerald-700" 
+            <Button
+              type="submit"
+              className="w-full bg-primary-600 hover:bg-primary-700"
               disabled={isLoading || (email !== "" && !isValidEmailDomain(email))}
             >
               {isLoading ? (
@@ -211,9 +213,9 @@ export default function SignUpPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-primary-700">
               Already have an account?{" "}
-              <Link href="/signin" className="text-emerald-600 hover:text-emerald-700 font-medium">
+              <Link href="/signin" className="text-primary-600 hover:text-primary-700 font-medium">
                 Sign in
               </Link>
             </p>

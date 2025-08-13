@@ -121,7 +121,7 @@ export function AnswerForm({ questionId, onSuccess }: AnswerFormProps) {
       <div className="flex justify-end">
         <Button
           type="submit"
-          className="bg-emerald-600 hover:bg-emerald-700 transition"
+          className="bg-primary-600 hover:bg-primary-700 transition"
           disabled={loading || !content.trim()}
         >
           {loading ? (

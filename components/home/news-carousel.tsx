@@ -113,8 +113,8 @@ export function NewsCarousel() {
   const currentNews = newsItems[currentIndex];
 
   return (
-    <div className="relative w-full mx-auto">
-      <Card className="overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+     <div className="relative w-full mx-auto">
+      <Card className="overflow-hidden bg-gradient-to-r from-primary-900 to-primary-800 text-primary-50 rounded-none border-none">
         <CardContent className="p-0">
           <div className="relative h-96 lg:h-[500px]">
             {/* Background Image */}
@@ -122,7 +122,7 @@ export function NewsCarousel() {
               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
               style={{ backgroundImage: `url(${currentNews.image})` }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-800/70" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-900/90 to-primary-800/70" />
             </div>
 
             {/* Content */}
@@ -132,7 +132,7 @@ export function NewsCarousel() {
                   <div className="flex items-center space-x-4 mb-4">
                     <Badge
                       variant="secondary"
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="bg-primary-600 hover:bg-primary-700 text-primary-50"
                     >
                       {currentNews.category}
                     </Badge>
@@ -147,16 +147,16 @@ export function NewsCarousel() {
                     )}
                   </div>
 
-                  <h2 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight">
+                  <h2 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight text-primary-50">
                     {currentNews.title}
                   </h2>
 
-                  <p className="text-lg lg:text-xl text-slate-200 mb-6 leading-relaxed">
+                  <p className="text-lg lg:text-xl text-primary-200 mb-6 leading-relaxed">
                     {currentNews.summary}
                   </p>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6 text-sm text-slate-300">
+                    <div className="flex items-center space-x-6 text-sm text-primary-200">
                       <div className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
                         {currentNews.readTime}
@@ -166,7 +166,7 @@ export function NewsCarousel() {
 
                     <Button
                       asChild
-                      className="bg-emerald-600 hover:bg-emerald-700"
+                      className="bg-primary-600 hover:bg-primary-700 text-primary-50"
                     >
                       <Link href={`/news/${currentNews.id}`}>
                         Read Full Article
@@ -181,7 +181,7 @@ export function NewsCarousel() {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-20"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-50 hover:bg-primary-800 z-20"
               onClick={goToPrevious}
             >
               <ChevronLeft className="w-6 h-6" />
@@ -190,7 +190,7 @@ export function NewsCarousel() {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-20"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-50 hover:bg-primary-800 z-20"
               onClick={goToNext}
             >
               <ChevronRight className="w-6 h-6" />
@@ -198,14 +198,14 @@ export function NewsCarousel() {
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center space-x-2 py-4 bg-slate-800">
+          <div className="flex justify-center space-x-2 py-4 bg-primary-600">
             {newsItems.map((_, index) => (
               <button
                 key={index}
                 className={`w-3 h-3 rounded-full transition-colors ${
                   index === currentIndex
-                    ? "bg-emerald-500"
-                    : "bg-slate-500 hover:bg-slate-400"
+                    ? "bg-primary-500"
+                    : "bg-primary-200 hover:bg-primary-300"
                 }`}
                 onClick={() => goToSlide(index)}
               />
@@ -220,18 +220,18 @@ export function NewsCarousel() {
           <Card
             key={news.id}
             className={`cursor-pointer transition-all hover:shadow-md ${
-              index === currentIndex ? "ring-2 ring-emerald-500" : ""
+              index === currentIndex ? "ring-2 ring-primary-500" : ""
             }`}
             onClick={() => goToSlide(index)}
           >
             <CardContent className="p-4">
-              <Badge variant="secondary" className="text-xs mb-2">
+              <Badge variant="secondary" className="text-xs mb-2 bg-primary-100 text-primary-700">
                 {news.category}
               </Badge>
-              <h3 className="font-semibold text-sm line-clamp-2 mb-2">
+              <h3 className="font-semibold text-sm line-clamp-2 mb-2 text-primary-800">
                 {news.title}
               </h3>
-              <div className="flex items-center text-xs text-slate-500">
+              <div className="flex items-center text-xs text-primary-500">
                 <Clock className="w-3 h-3 mr-1" />
                 {news.readTime}
               </div>
