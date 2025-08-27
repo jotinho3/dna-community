@@ -138,7 +138,7 @@ export default function AskQuestionPage() {
               <HelpCircle className="w-6 h-6 mr-2 text-emerald-600" />
               Ask a Question
             </CardTitle>
-            <CardDescription>Share your question with the DataHub community and get expert answers</CardDescription>
+            <CardDescription>Share your question with the TechBridge Community - Brazil community and get expert answers</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
