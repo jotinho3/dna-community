@@ -35,10 +35,10 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-16 h-16 flex items-center justify-center">
+            <div className="w-28 h-28 flex items-center justify-center">
               <img src="/Infosys_logo.svg.png" alt="TechBridge Community - Brazil" />
             </div>
-            <span className="text-xl font-bold text-primary-50">TechBridge Community - Brazil</span>
+            <span className="text-ls font-bold text-primary-50">TechBridge Community - Brazil</span>
           </Link>
 
           {/* Navigation */}
