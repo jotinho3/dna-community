@@ -183,7 +183,7 @@ const CertificateViewer: React.FC<CertificateViewerProps> = ({
                   </svg>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Certificate of Completion</h1>
-                <p className="text-gray-600">DNA Community Workshop Program</p>
+                <p className="text-gray-600">{process.env.NEXT_PUBLIC_COMMUNITY_NAME} Workshop Program</p>
               </div>
 
               <div className="mb-6">

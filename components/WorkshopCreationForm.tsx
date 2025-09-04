@@ -244,7 +244,7 @@ const WorkshopCreationForm: React.FC<WorkshopCreationFormProps> = ({
             Create New Workshop
           </CardTitle>
           <CardDescription>
-            Share your knowledge with the DNA Community by creating an engaging
+            Share your knowledge with the {process.env.NEXT_PUBLIC_COMMUNITY_NAME} by creating an engaging
             workshop.
           </CardDescription>
         </CardHeader>

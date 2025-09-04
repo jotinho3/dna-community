@@ -18,7 +18,7 @@ constructor(apiUrl: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhos
         type: 'workshop',
         subType,
         fromUserId: data.creatorId || 'system',
-        fromUserName: data.creatorName || 'DNA Community',
+        fromUserName: data.creatorName || '{process.env.NEXT_PUBLIC_COMMUNITY_NAME}',
         targetId: data.workshopId,
         targetType: 'workshop',
         workshopId: data.workshopId,
@@ -536,7 +536,7 @@ async unenrollFromWorkshop(workshopId: string, userId: string): Promise<void> {
       workshopTitle: certificate.workshopTitle,
       certificateId: certificate.id,
       creatorId: 'system',
-      creatorName: 'DNA Community',
+      creatorName: process.env.COMMUNITY_NAME,
     });
   }
 
@@ -600,7 +600,7 @@ async unenrollFromWorkshop(workshopId: string, userId: string): Promise<void> {
       workshopId: '',
       workshopTitle: '',
       creatorId: 'system',
-      creatorName: 'DNA Community',
+      creatorName: '{process.env.NEXT_PUBLIC_COMMUNITY_NAME}',
     });
   }
 

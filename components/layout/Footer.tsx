@@ -11,7 +11,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-primary-700 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-primary-50" />
               </div>
-              <span className="text-xl font-bold text-primary-50">TechBridge Community - Brazil</span>
+              <span className="text-xl font-bold text-primary-50">{process.env.NEXT_PUBLIC_COMMUNITY_NAME}</span>
             </div>
             <p className="text-sm text-primary-200">
               The premier community for data professionals to share knowledge and grow together.
@@ -98,7 +98,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-primary-800 mt-8 pt-8 text-center text-sm text-primary-200">
-          <p>&copy; 2024 TechBridge Community - Brazil. All rights reserved.</p>
+          <p>&copy; 2024 {process.env.NEXT_PUBLIC_COMMUNITY_NAME}. All rights reserved.</p>
         </div>
       </div>
     </footer>

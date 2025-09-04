@@ -192,7 +192,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         type: 'workshop',
         subType,
         fromUserId: data.creatorId || 'system',
-        fromUserName: data.creatorName || 'DNA Community',
+        fromUserName: data.creatorName || process.env.COMMUNITY_NAME,
         targetId: data.workshopId,
         targetType: 'workshop',
         workshopId: data.workshopId,
