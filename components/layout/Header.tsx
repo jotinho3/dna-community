@@ -13,6 +13,7 @@ import {
   LogOut,
   Bell,
   Users,
+  ShoppingBag,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
@@ -30,15 +31,17 @@ export default function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="bg-primary-600  sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-primary-600 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-28 h-28 flex items-center justify-center">
-              <img src="/Infosys_logo.svg.png" alt="TechBridge Community - Brazil" />
+              <img src="/Infosys_logo.svg.png" alt="Infosys Logo" />
             </div>
-            <span className="text-ls font-bold text-primary-50">TechBridge Community - Brazil</span>
+            <span className="text-lg font-bold text-primary-50">
+              {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "DNA Community"}
+            </span>
           </Link>
 
           {/* Navigation */}
@@ -54,6 +57,8 @@ export default function Header() {
                 Ask Question
               </Link>
             </Button>
+
+          
 
             {user ? (
               <>
@@ -90,6 +95,23 @@ export default function Header() {
                     Profiles
                   </Link>
                 </Button>
+
+                  {/* KShop Link - Available for all users */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex text-primary-50 hover:bg-primary-800 hover:text-primary-200"
+              asChild
+            >
+              <a 
+                href="https://lex.infosysapps.com/web/en/app/search/knowledgeHub?lang=en,pt&q=all"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                KShop
+              </a>
+            </Button>
 
                 {/* Notification Bell */}
                 <NotificationBell />
@@ -153,6 +175,18 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    {/* KShop in dropdown for mobile */}
+                    <DropdownMenuItem asChild>
+                      <a 
+                        href="https://lex.infosysapps.com/web/en/app/search/knowledgeHub?lang=en,pt&q=all"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        KShop
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign out
@@ -196,7 +230,6 @@ export default function Header() {
                   </Link>
                 </Button>
                 <Button
-    
                   size="sm"
                   className="bg-primary-600 text-primary-50 hover:bg-primary-800 hover:text-primary-200"
                   asChild

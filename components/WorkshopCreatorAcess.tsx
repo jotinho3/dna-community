@@ -24,7 +24,7 @@ const WorkshopCreatorAccess: React.FC<WorkshopCreatorAccessProps> = ({
     try {
       await roleService.requestWorkshopCreatorRole(
         userId,
-        'I would like to become a workshop creator to share my knowledge with the DNA Community.'
+        'I would like to become a workshop creator to share my knowledge with the community.'
       );
       setRequestSent(true);
     } catch (error) {
@@ -63,7 +63,7 @@ const WorkshopCreatorAccess: React.FC<WorkshopCreatorAccessProps> = ({
         </h3>
 
         <p className="text-gray-600 mb-6">
-          To create workshops and share your knowledge with the DNA Community, you need workshop creator permissions.
+          To create workshops and share your knowledge with the {process.env.NEXT_PUBLIC_COMMUNITY_NAME}, you need workshop creator permissions.
         </p>
 
         <div className="bg-gray-50 rounded-lg p-4 mb-6">

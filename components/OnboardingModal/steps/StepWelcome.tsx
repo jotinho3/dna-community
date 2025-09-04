@@ -27,7 +27,7 @@ export function StepWelcome({ onNext }: StepWelcomeProps) {
 
         <div className="space-y-4">
           <h1 className="text-2xl font-bold text-slate-900">
-            Welcome to DNA Community
+            Welcome to {process.env.NEXT_PUBLIC_COMMUNITY_NAME}
           </h1>
           <p className="text-slate-600 max-w-sm mx-auto">
             Let's personalize your experience by getting to know you better

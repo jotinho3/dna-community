@@ -189,7 +189,7 @@ export default function NewsPage() {
       <div className="bg-white border-b border-primary-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-primary-900 mb-4">TechBridge Community - Brazil News</h1>
+            <h1 className="text-4xl font-bold text-primary-900 mb-4">{process.env.NEXT_PUBLIC_COMMUNITY_NAME} News</h1>
             <p className="text-xl text-primary-700 max-w-3xl mx-auto">
               Stay updated with the latest developments in data science, AI, and technology
             </p>
