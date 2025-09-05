@@ -96,11 +96,11 @@ export default function SignUpPage() {
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-primary-900">
-                {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "DNA Community"}
+                {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "Community"}
               </span>
             </div>
             {/* <CardTitle className="text-2xl text-primary-900">
-              Join {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "DNA Community"}
+              Join {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "Community"}
             </CardTitle> */}
             <CardDescription>
               <span className="text-primary-700">

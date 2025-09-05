@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Simulate checking for existing session
-    const savedUser = localStorage.getItem("datahub-user")
+    const savedUser = localStorage.getItem("community-user")
     if (savedUser) {
       setUser(JSON.parse(savedUser))
     }
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setUser(mockUser)
-    localStorage.setItem("datahub-user", JSON.stringify(mockUser))
+    localStorage.setItem("community-user", JSON.stringify(mockUser))
     setIsLoading(false)
   }
 
@@ -94,13 +94,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setUser(newUser)
-    localStorage.setItem("datahub-user", JSON.stringify(newUser))
+    localStorage.setItem("community-user", JSON.stringify(newUser))
     setIsLoading(false)
   }
 
   const signOut = () => {
     setUser(null)
-    localStorage.removeItem("datahub-user")
+    localStorage.removeItem("community-user")
   }
 
   const updateProfile = async (updates: Partial<User>) => {
@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const updatedUser = { ...user, ...updates }
     setUser(updatedUser)
-    localStorage.setItem("datahub-user", JSON.stringify(updatedUser))
+    localStorage.setItem("community-user", JSON.stringify(updatedUser))
     setIsLoading(false)
   }
 

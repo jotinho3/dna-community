@@ -40,7 +40,7 @@ export default function Header() {
               <img src="/Infosys_logo.svg.png" alt="Infosys Logo" />
             </div>
             <span className="text-lg font-bold text-primary-50">
-              {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "DNA Community"}
+              {process.env.NEXT_PUBLIC_COMMUNITY_NAME || "Community"}
             </span>
           </Link>
 
