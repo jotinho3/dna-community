@@ -31,16 +31,18 @@ export const useOnboarding = () => {
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (user?.uid) {
-        try {
-          const response = await fetch(`https://dna-community-back.onrender.com/api/users/${user.uid}/onboarding/status`)
-          const data = await response.json()
-          
-          if (!data.hasCompletedOnboarding) {
-            setShowOnboarding(true)
-          }
-        } catch (error) {
-          console.error('Error checking onboarding status:', error)
+      try {
+        const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}/onboarding/status`
+        )
+        const data = await response.json()
+
+        if (!data.hasCompletedOnboarding) {
+        setShowOnboarding(true)
         }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error)
+      }
       }
       setLoading(false)
     }
@@ -72,15 +74,18 @@ export const useOnboarding = () => {
     if (!user?.uid) return
 
     try {
-      const response = await fetch(`https://dna-community-back.onrender.com/api/users/${user.uid}/onboarding/complete`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData
-        })
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}/onboarding/complete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...formData
+          })
+        }
+      )
 
       if (response.ok) {
         setShowOnboarding(false)

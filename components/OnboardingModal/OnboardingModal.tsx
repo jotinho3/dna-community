@@ -46,7 +46,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
       }
 
       const response = await fetch(
-        `https://dna-community-back.onrender.com/api/users/${user.uid}/onboarding/status`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}/onboarding/status`
       );
 
       if (!response.ok) {
